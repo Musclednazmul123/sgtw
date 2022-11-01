@@ -1,5 +1,5 @@
 {
-  "name": "muscled-app-stater",
+  "name": "seph-got-the-waves",
   "version": "1.0.0",
   "main": "web/index.js",
   "license": "UNLICENSED",
@@ -14,6 +14,7 @@
   "dependencies": {
     "@shopify/app": "3.21.0",
     "@shopify/cli": "3.21.0",
+    "@shopify/polaris-icons": "^6.4.0",
     "mongoose": "^6.7.0"
   },
   "author": "nazmu"
