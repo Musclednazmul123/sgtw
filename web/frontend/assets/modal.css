@@ -1,0 +1,28 @@
+.modalContent{
+width:300px;
+margin:auto;
+position:relative;
+}
+
+.modal{
+    width:100%;
+    height:100%;
+    position:absolute;
+    top:0;
+    left:0;
+    background-color: rgba(0,0,0,0.5);
+    z-index:100;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.closeIcon{
+    position:absolute;
+    background:none;
+    border:0;
+    right:13px;
+    top:13px;
+    z-index:101;
+    cursor:pointer;
+}
