@@ -12,10 +12,13 @@ import { TitleBar } from '@shopify/app-bridge-react';
 
 import { trophyImage } from '../assets';
 
-import { ProductsCard } from '../components';
+import { ProductsCard, EmptyState, PickDetailsModal } from '../components';
+
+let loading=true;
 
 export default function HomePage() {
-  return (
+  
+  return loading ? <EmptyState/>: (
     <Page narrowWidth>
       {/* <TitleBar title="App name" primaryAction={null} /> */}
       <Layout>

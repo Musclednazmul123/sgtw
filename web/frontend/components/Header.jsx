@@ -25,6 +25,8 @@ import {
   notification,
 } from '../assets';
 
+import {PickDetailsModal} from "./";
+
 export function Header() {
   const searchIcon = <Icon source={SearchMinor} />;
   return (
@@ -41,7 +43,8 @@ export function Header() {
               />
             </Stack>
             <Stack alignment="center" spacing="loose">
-              <Button primary>+ Add New Pack</Button>
+              {/* <Button primary>+ Add New Pack</Button> */}
+              <PickDetailsModal buttonText="+ Add New Pack"/>
               <Image source={announceIcon} height={14} />
               <Image source={notification} height={14} />
               <Stack alignment="center" spacing="tight">
