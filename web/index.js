@@ -192,6 +192,7 @@ export async function createServer(
 
       return res.redirect(embeddedUrl + req.path);
     }
+    console.log("ALl checks passed");
 
     const htmlFile = join(
       isProd ? PROD_INDEX_PATH : DEV_INDEX_PATH,
