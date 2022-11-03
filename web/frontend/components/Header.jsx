@@ -1,21 +1,14 @@
 import {
   Avatar,
   Card,
-  DisplayText,
-  Heading,
   Image,
   Stack,
-  TextStyle,
   TextField,
   Icon,
-  Button,
-  List,
-  Link,
 } from '@shopify/polaris';
 import {
   ChevronDownMinor,
   SearchMinor,
-  ProfileMajor,
 } from '@shopify/polaris-icons';
 import {
   announceIcon,

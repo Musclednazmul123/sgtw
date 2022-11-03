@@ -4,16 +4,14 @@ import {
   Button,
   Form,
   TextField,
-  Subheading,
   Stack,
   Icon,
   Select,
   Checkbox,
   DropZone,
   Image,
-  Heading,
 } from "@shopify/polaris";
-import { modalstyle, editIcon, closeImage } from "../assets";
+import { editIcon, closeImage } from "../assets";
 import { MobileCancelMajor } from "@shopify/polaris-icons";
 
 const PickDetailsModal = ({ buttonText }) => {
