@@ -4,7 +4,7 @@ import { PackDetails } from '../../components';
 export default function Pack() {
   return (
     <>
-      <Page>
+      <Page fullWidth>
         <Layout>
           <Layout.Section>
             <PackDetails />

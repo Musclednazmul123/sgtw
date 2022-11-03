@@ -5,20 +5,23 @@ import {
   MobileCancelMajor
 } from '@shopify/polaris-icons';
 
-const PickDetailsModal = ({buttonText}) => {
-let [active,setActive]=useState(true);
+const PickDetailsModal = ({buttonText, link}) => {
+let [active,setActive]=useState(false);
 
 
 
   return (
     <>
+    {link ? <span onClick={()=>{setActive(true)}}><a href='#'>{buttonText}</a></span>:
+    
     <Button primary onClick={()=>{setActive(true)}}>{buttonText}</Button>
+    }
     {
       active ?
     <div className="modal">
       <div className='modalContent'>
         <button className='closeIcon' onClick={()=>{setActive(false)}}>
-          <Icon source={MobileCancelMajor}  color="base"/>
+          <Icon source={MobileCancelMajor}   color="base"/>
           </button>
       <Card sectioned>
      <Form onSubmit={()=>{console.log("Inside form submit handler")}}>

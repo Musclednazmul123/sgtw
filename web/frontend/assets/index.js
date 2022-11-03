@@ -8,3 +8,5 @@ export { default as notification } from './notification.svg';
 export { default as packStyle } from './pack.css';
 export { default as emptyState } from './empty-state.png';
 export { default as modalstyle } from './modal.css';
+export { default as musicIcon } from './music.svg';
+export { default as downloadIcon } from './download.svg';

@@ -1,20 +1,25 @@
-import React from 'react'
-import { Card, EmptyState } from '@shopify/polaris'
-import { emptyState } from '../assets'
+import React from 'react';
+import { Card, EmptyState, Button } from '@shopify/polaris';
+import { emptyState } from '../assets';
+import { PickDetailsModal } from './';
 
-const EmptyStateComponent=()=>{
+const EmptyStateComponent = ({ samples }) => {
   return (
     <div>
-    <Card sectioned>
-      <EmptyState 
-    heading="This is where you’ll manage your products"
-    action={{content:"+Add New Pack"}}
-    image={emptyState}>
-         <p>You can create a new product or import your product inventory.</p>
+      <EmptyState
+        heading="This is where you’ll manage your packs"
+        image={emptyState}
+      >
+        <p>You can create a new pack or import your pack inventory.</p>
+        <br />
+        {samples ? (
+          <Button primary>+ Add Samples</Button>
+        ) : (
+          <PickDetailsModal buttonText="+ Add New Pack" />
+        )}
       </EmptyState>
-    </Card>
     </div>
-  )
-}
+  );
+};
 
-export default EmptyStateComponent
+export default EmptyStateComponent;
