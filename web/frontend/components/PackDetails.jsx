@@ -1,11 +1,13 @@
 import { Button, Card, Icon, Stack } from '@shopify/polaris';
-import { trophyImage } from '../assets';
-import { packStyle, musicIcon, downloadIcon } from '../assets';
+import { packStyle, musicIcon, downloadIcon, trophyImage } from '../assets';
 import { EditMajor } from '@shopify/polaris-icons';
 import { PickDetailsModal, EmptyState } from './';
+import { useNavigate } from 'react-router-dom';
 
 export function PackDetails() {
   const pack = undefined;
+  const navigate = useNavigate();
+
   return (
     <>
       <Card sectioned subdued>
@@ -38,7 +40,9 @@ export function PackDetails() {
               </small>
               <p className="details">Fresh Added</p>
               <Stack>
-                <Button primary>+ Add Samples</Button>
+                <span onClick={() => navigate('/packs/new')}>
+                  <Button primary>+ Add Samples</Button>
+                </span>
                 <Button destructive>Delete</Button>
               </Stack>
             </Stack>
