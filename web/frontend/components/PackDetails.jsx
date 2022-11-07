@@ -1,7 +1,7 @@
 import { Button, Card, Icon, Stack } from '@shopify/polaris';
 import { packStyle, musicIcon, downloadIcon, trophyImage } from '../assets';
 import { EditMajor } from '@shopify/polaris-icons';
-import { PickDetailsModal, EmptyState } from './';
+import { PickDetailsModal, EmptyState, PackDetailsList } from './';
 import { useNavigate } from 'react-router-dom';
 
 export function PackDetails() {
@@ -11,6 +11,7 @@ export function PackDetails() {
   return (
     <>
       <Card sectioned subdued>
+        <Card.Section>
         <div className="viewport-container">
           <Stack>
             <div className="pack-thumbnail-container">
@@ -54,8 +55,10 @@ export function PackDetails() {
             <span>Sales: $0.0</span>
           </Stack>
         </div>
-        <hr />
-        {pack ? 'pack is render' : <EmptyState samples />}
+        </Card.Section>
+        <Card.Section>
+        {pack ? 'pack is render' : <PackDetailsList />}
+        </Card.Section>
       </Card>
     </>
   );

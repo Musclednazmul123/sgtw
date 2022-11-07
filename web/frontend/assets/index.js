@@ -12,3 +12,4 @@ export { default as musicIcon } from './music.svg';
 export { default as downloadIcon } from './download.svg';
 export {default as editIcon} from "./figma-edit.svg";
 export {default as closeImage} from "./image-close.svg";
+export {default as packThumbnail} from "./packThumbnail.png";
