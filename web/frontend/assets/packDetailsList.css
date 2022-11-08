@@ -1,5 +1,20 @@
 .packSampleItemDescContainer{
-
-
-    
+background-position: center;
+width:40px;
+height:40px;
+border-radius: 2px;
+display:flex;
+justify-content: center;
+align-items: center;
 }
+
+.firstCell{
+   margin-top: 5px;
+   margin-bottom:5px;
+
+}
+
+
+/* .videoIcon{
+    
+} */

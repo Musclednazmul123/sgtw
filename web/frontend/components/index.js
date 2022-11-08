@@ -5,5 +5,7 @@ export { default as EmptyState } from './EmptyState';
 export { default as PickDetailsModal } from './PickDetailsModal';
 export { DropsZone } from './DropZone';
 export {default as PackDetailsList} from "./PackDetailsList";
-export {default as packSamples} from "./packSamples";
+export {default as packSamples, packSamplesHomePage} from "./packSamples";
+export {default as HomePage } from "./HomePage";
+export {default as PaginationNumber} from "./PaginationNumber";
 export * from './providers';

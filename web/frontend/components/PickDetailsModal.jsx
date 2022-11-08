@@ -14,7 +14,7 @@ import {
 import { editIcon, closeImage } from "../assets";
 import { MobileCancelMajor } from "@shopify/polaris-icons";
 
-const PickDetailsModal = ({ buttonText }) => {
+const PickDetailsModal = ({ buttonText, customContent }) => {
   let [active, setActive] = useState(false);
   let [priceChecked, setPriceChecked] = useState(false);
   let [file, setFile] = useState(null);
@@ -31,14 +31,25 @@ const PickDetailsModal = ({ buttonText }) => {
 
   return (
     <>
-      <Button
-        primary
-        onClick={() => {
-          setActive(true);
-        }}
-      >
-        {buttonText}
-      </Button>
+      {(buttonText && (
+        <Button
+          primary
+          onClick={() => {
+            setActive(true);
+          }}
+        >
+          {buttonText}
+        </Button>
+      )) ||
+        (customContent && (
+          <div
+            onClick={() => {
+              setActive(true);
+            }}
+          >
+            {customContent}
+          </div>
+        ))}
       {active && (
         <div className="modal">
           <div className="modalContent">
@@ -58,7 +69,9 @@ const PickDetailsModal = ({ buttonText }) => {
               >
                 <Stack vertical>
                   <Stack distribution="center" element="h3">
-                    <h3 element="h2" className="packDetailsHeading">PACK DETAILS</h3>
+                    <h3 element="h2" className="packDetailsHeading">
+                      PACK DETAILS
+                    </h3>
                   </Stack>
 
                   <Stack distribution="fill" spacing="baseTight" vertical>
