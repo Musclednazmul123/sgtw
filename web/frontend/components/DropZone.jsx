@@ -49,7 +49,7 @@ export function DropsZone() {
           {fileUpload}
         </DropZone>
         <Stack distribution="center">
-          <span onClick={() => navigate('/packs/1')}>
+          <span onClick={() => navigate(-1)}>
             <Button destructive>Go Back</Button>
           </span>
           <span>
