@@ -12,7 +12,7 @@ import { TitleBar } from '@shopify/app-bridge-react';
 
 import { trophyImage } from '../assets';
 
-import { ProductsCard, EmptyState, HomePage as HomePageContent } from '../components';
+import {AllPacks, ProductsCard, EmptyState, HomePage as HomePageContent } from '../components';
 
 let loading = false;
 

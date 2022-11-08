@@ -8,4 +8,5 @@ export {default as PackDetailsList} from "./PackDetailsList";
 export {default as packSamples, packSamplesHomePage} from "./packSamples";
 export {default as HomePage } from "./HomePage";
 export {default as PaginationNumber} from "./PaginationNumber";
+export { default as AllPacks } from './AllPacks';
 export * from './providers';
