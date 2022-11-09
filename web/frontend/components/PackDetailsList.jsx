@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Filters,
   IndexTable,
@@ -8,14 +8,18 @@ import {
   Badge,
   useIndexResourceState,
   Pagination,
+  TextField,
+  Button,
 } from "@shopify/polaris";
 import { packSamples, PaginationNumber } from ".";
 import { packDetailsListStyle, VideoIcon } from "../assets";
-import { ImportMinor } from "@shopify/polaris-icons";
+import { ImportMinor, SortMinor } from "@shopify/polaris-icons";
 
 let columnHeading = ["Samples", "Price", "Downloads", "Sales", "Status"];
 
 const PackDetailsList = () => {
+  const [queryValue, setQueryValue] = useState(null);
+
   let label = (
     <Stack distribution="center" spacing="extraTight">
       {[1, 2, 3].map((number, index) => (
@@ -23,6 +27,49 @@ const PackDetailsList = () => {
       ))}
     </Stack>
   );
+
+  let filters = [
+    {
+      key: "actions",
+      label: "Actions",
+      filter: (
+        <TextField type="text" label="Actions" autoComplete="off" labelHidden />
+      ),
+      shortcut: true,
+    },
+    {
+      key: "bpm",
+      label: "BPM",
+      filter: (
+        <TextField type="text" label="BPM" autoComplete="off" labelHidden />
+      ),
+      shortcut: true,
+    },
+    {
+      key: "genre",
+      label: "Genre",
+      filter: (
+        <TextField type="text" label="Genre" autoComplete="off" labelHidden />
+      ),
+      shortcut: true,
+    },
+    {
+      key: "key",
+      label: "Key",
+      filter: (
+        <TextField type="text" label="Key" autoComplete="off" labelHidden />
+      ),
+      shortcut: true,
+    },
+    {
+      key: "edit",
+      label: "Edit",
+      filter: (
+        <TextField type="text" label="Edit" autoComplete="off" labelHidden />
+      ),
+      shortcut: true,
+    },
+  ];
 
   const resourceName = {
     singular: "pack",
@@ -81,6 +128,17 @@ const PackDetailsList = () => {
 
   return (
     <Stack vertical alignment="fill" spacing="extraLoose" distribution="center">
+      <div className="filterWrapper">
+        <div className="filter">
+        <Filters
+          filters={filters}
+          queryValue={queryValue}
+          queryPlaceholder="Filter"
+          onQueryChange={setQueryValue}
+        />
+        </div>
+        <Button icon={SortMinor}>Sort</Button>
+      </div>
       <IndexTable
         resourceName={resourceName}
         itemCount={packSamples.length}
