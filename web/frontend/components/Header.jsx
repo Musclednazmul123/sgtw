@@ -1,3 +1,4 @@
+import React,{useState} from 'react';
 import {
   Avatar,
   Card,
@@ -21,6 +22,13 @@ import {
 import {PickDetailsModal} from "./";
 
 export function Header() {
+let [value,setValue]=useState("");
+
+
+let onChangeHandler=(value)=>{
+  setValue(value);
+}
+
   const searchIcon = <Icon source={SearchMinor} />;
   return (
     <>
@@ -30,9 +38,14 @@ export function Header() {
             <Stack spacing="loose">
               <Image source={logoImage} />
               <TextField
+                label="Search"
                 suffix={searchIcon}
                 inputMode="text"
                 placeholder="Search packs"
+                autoComplete='off'
+                onChange={onChangeHandler}
+                value={value}
+                labelHidden
               />
             </Stack>
             <Stack alignment="center" spacing="loose">
