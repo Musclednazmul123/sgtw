@@ -40,24 +40,28 @@ const PickDetailsModal = ({ buttonText, customContent }) => {
 
   const handleCreate = async () => {
     // setIsLoading(true);
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('title', title);
+    fd.append('price', price);
+
+    console.log([...fd]);
+
     const response = await fetch('/api/packs', {
       // Adding method type
       method: 'POST',
-
       // Adding body or contents to send
-      body: JSON.stringify({
-        title: title,
-        price: price,
-        featuredImage: {
-          alt: file.name,
-          mediaContentType: file.type,
-          originalSource: fd.image,
-        },
-      }),
+      body: fd,
+
+      // body: JSON.stringify({
+      //   title: title,
+      //   price: price,
+      // }),
 
       // Adding headers to the request
       headers: {
-        'Content-type': 'application/json; charset=UTF-8',
+        // 'Content-type': 'application/json; charset=UTF-8',
+        'Content-type': 'multipart/form-data',
       },
     });
 
@@ -74,8 +78,6 @@ const PickDetailsModal = ({ buttonText, customContent }) => {
   };
 
   // const imgurl = window.URL.createObjectURL(file);
-
-  console.log(file);
 
   return (
     <>
@@ -99,7 +101,7 @@ const PickDetailsModal = ({ buttonText, customContent }) => {
           </div>
         ))}
       {active && (
-        <div className="modal">
+        <div className="modal" style={{height:`${document.getElementById ("app").scrollHeight}px`}}>
           <div className="modalContent">
             <button
               className="closeIcon"
@@ -213,6 +215,10 @@ const PickDetailsModal = ({ buttonText, customContent }) => {
                     <Button onClick={handleCreate} primary>
                       Save
                     </Button>
+                    {/* <input
+                      type="file"
+                      onChange={(e) => setMainFile(e.target.files[0])}
+                    /> */}
                   </Stack>
                 </Stack>
               </Form>
