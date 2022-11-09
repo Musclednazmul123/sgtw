@@ -15,7 +15,7 @@ export async function getAll(req, res, app) {
       }
     }
   }`;
-  console.log('hello world');
+
   try {
     const client = await getClient(req, res, app);
     const packs = await client.query({
@@ -46,6 +46,8 @@ export async function createPack(req, res, app) {
     }
   }`;
 
+  console.log('start');
+  console.log(req.body.file);
   try {
     const client = await getClient(req, res, app);
     const pack = await client.query({
@@ -59,20 +61,24 @@ export async function createPack(req, res, app) {
         },
       },
     });
-    if (req.body.featuredImage) {
-      // console.log(pack.body.data.productCreate.product.id);
-      // await client.query({
-      //   data: {
-      //     query: imageUpdate,
-      //     variables: {
-      //       input: {
-      //         productId: pack.body.data.productCreate.product.id,
-      //         media: req.body.featuredImage,
-      //       },
-      //     },
-      //   },
-      // });
-      console.log(req.body.featuredImage);
+    if (req.body.image) {
+      console.log(pack.body.data.productCreate.product.id);
+      await client.query({
+        data: {
+          query: imageUpdate,
+          variables: {
+            input: {
+              productId: pack.body.data.productCreate.product.id,
+              media: {
+                alt: req.body.image.name,
+                mediaContentType: req.body.image.type,
+                originalSource: req.body.image,
+              },
+            },
+          },
+        },
+      });
+      console.log(req.body.image);
     }
     res.send(pack);
   } catch (error) {
