@@ -27,6 +27,7 @@ const host = process.env.HOST
 
 let hmrConfig;
 if (host === "localhost") {
+  console.log("hmmr localhost");
   hmrConfig = {
     protocol: "ws",
     host: "localhost",
@@ -34,6 +35,8 @@ if (host === "localhost") {
     clientPort: 64999,
   };
 } else {
+  console.log("insise else hmr config");
+  console.log(host);
   hmrConfig = {
     protocol: "wss",
     host: host,

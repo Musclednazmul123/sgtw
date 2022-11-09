@@ -13,6 +13,8 @@ import redirectToAuth from './helpers/redirect-to-auth.js';
 import { BillingInterval } from './helpers/ensure-billing.js';
 import { AppInstallations } from './app_installations.js';
 import { connectDB } from './db/mongodb.js';
+import managePacks from './middleware/manage-packs.js';
+import fileupload from 'express-fileupload';
 
 const USE_ONLINE_TOKENS = false;
 
@@ -147,6 +149,9 @@ export async function createServer(
   // All endpoints after this point will have access to a request.body
   // attribute, as a result of the express.json() middleware
   app.use(express.json());
+  app.use(fileupload());
+
+  managePacks(app);
 
   app.use((req, res, next) => {
     const shop = Shopify.Utils.sanitizeShop(req.query.shop);
@@ -192,6 +197,7 @@ export async function createServer(
 
       return res.redirect(embeddedUrl + req.path);
     }
+    console.log('ALl checks passed');
 
     const htmlFile = join(
       isProd ? PROD_INDEX_PATH : DEV_INDEX_PATH,

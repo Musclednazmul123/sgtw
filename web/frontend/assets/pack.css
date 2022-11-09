@@ -1,0 +1,53 @@
+.pack-thumbnail{
+  height: 200px;
+}
+.pack-thumbnail-container{
+  position: relative;
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.thumbnail-edit{
+  display: none;
+  cursor: pointer;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  position: absolute;
+  height: 200px;
+  width: 100%;
+  background-color: rgba(0,0,0,0.5);
+  color: white;
+}
+
+.pack-thumbnail-container:hover .thumbnail-edit{
+  display: flex;
+}
+
+.pack-title{
+  font-size: 20px;
+}
+
+.details{
+  font-size: 14px;
+}
+
+.viewport-container{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  gap: 10px;
+  padding: 10px;
+}
+
+.drop-zone{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 50%;
+  margin: auto;
+  justify-content: flex-end;
+}
