@@ -77,3 +77,11 @@
     .imageClearContainer:hover .imageClear{
         text-decoration: none;   
     }
+
+    .title-input, .price{
+      width: 100%;
+      padding: 10px;
+      border: 1px solid gray;
+      background-color: white;
+      border-radius: 5px;
+    }
