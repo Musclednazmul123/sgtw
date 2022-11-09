@@ -57,10 +57,10 @@ export function PackDetails() {
             </Stack>
             <Stack>
               <Stack spacing="tight">
-                <p className="pack-caption">Downloads: <span className="bold-caption">0</span></p>{" "}
+                <p className="pack-caption">Downloads: <span className="bold-caption">5.5k</span></p>{" "}
                 <img src={downloadIcon} color="base" />
               </Stack>
-              <p className="pack-caption">Sales: <span className="bold-caption">$0.0</span></p>
+              <p className="pack-caption">Sales: <span className="bold-caption">$62.59k</span></p>
             </Stack>
           </div>
         </Card.Section>
