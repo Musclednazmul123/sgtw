@@ -101,7 +101,7 @@ const PickDetailsModal = ({ buttonText, customContent }) => {
           </div>
         ))}
       {active && (
-        <div className="modal">
+        <div className="modal" style={{height:`${document.getElementById ("app").scrollHeight}px`}}>
           <div className="modalContent">
             <button
               className="closeIcon"

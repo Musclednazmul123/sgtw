@@ -12,7 +12,6 @@ import { PickDetailsModal } from './';
 import { useNavigate } from 'react-router-dom';
 
 export function Header() {
-  const navigate = useNavigate();
   const searchIcon = <Icon source={SearchMinor} />;
   return (
     <>
@@ -22,9 +21,14 @@ export function Header() {
             <Stack spacing="loose">
               <Image source={logoImage} />
               <TextField
+                label="Search"
                 suffix={searchIcon}
                 inputMode="text"
                 placeholder="Search packs"
+                autoComplete="off"
+                onChange={onChangeHandler}
+                value={value}
+                labelHidden
               />
             </Stack>
             <Stack alignment="center" spacing="loose">

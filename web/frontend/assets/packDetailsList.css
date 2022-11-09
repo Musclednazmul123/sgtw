@@ -19,6 +19,15 @@
 .columnHeading {
   font-size: 14px;
   color: #202223;
-  font-weight:400;
-  padding-bottom: 10px;
+  font-weight: 400;
+  /* margin-bottom: 10px; */
+}
+
+.filterWrapper {
+  display: flex;
+  gap: 10px;
+}
+
+.filter {
+  flex: 1;
 }
