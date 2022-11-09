@@ -15,7 +15,7 @@ import { editIcon, closeImage, modalstyle } from '../assets';
 import { MobileCancelMajor } from '@shopify/polaris-icons';
 import { useAuthenticatedFetch } from '../hooks';
 
-const PickDetailsModal = ({ buttonText }) => {
+const PickDetailsModal = ({ buttonText, customContent }) => {
   let [active, setActive] = useState(false);
   let [priceChecked, setPriceChecked] = useState(false);
   let [file, setFile] = useState(null);
@@ -79,14 +79,25 @@ const PickDetailsModal = ({ buttonText }) => {
 
   return (
     <>
-      <Button
-        primary
-        onClick={() => {
-          setActive(true);
-        }}
-      >
-        {buttonText}
-      </Button>
+      {(buttonText && (
+        <Button
+          primary
+          onClick={() => {
+            setActive(true);
+          }}
+        >
+          {buttonText}
+        </Button>
+      )) ||
+        (customContent && (
+          <div
+            onClick={() => {
+              setActive(true);
+            }}
+          >
+            {customContent}
+          </div>
+        ))}
       {active && (
         <div className="modal">
           <div className="modalContent">

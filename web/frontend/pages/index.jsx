@@ -12,7 +12,7 @@ import { TitleBar } from '@shopify/app-bridge-react';
 
 import { trophyImage } from '../assets';
 
-import { AllPacks, EmptyState } from '../components';
+import {AllPacks, ProductsCard, EmptyState, HomePage as HomePageContent } from '../components';
 
 let loading = false;
 
@@ -22,12 +22,15 @@ export default function HomePage() {
       <EmptyState />
     </Card>
   ) : (
-    <Page narrowWidth>
+    <Page fullWidth>
       <Layout>
         <Layout.Section>
-          <AllPacks />
+          <Card sectioned>
+            <HomePageContent/>
+          </Card>
         </Layout.Section>
       </Layout>
     </Page>
   );
 }
+  
