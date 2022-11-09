@@ -1,15 +1,5 @@
-import {
-  Avatar,
-  Card,
-  Image,
-  Stack,
-  TextField,
-  Icon,
-} from '@shopify/polaris';
-import {
-  ChevronDownMinor,
-  SearchMinor,
-} from '@shopify/polaris-icons';
+import { Avatar, Card, Image, Stack, TextField, Icon } from '@shopify/polaris';
+import { ChevronDownMinor, SearchMinor } from '@shopify/polaris-icons';
 import {
   announceIcon,
   logoImage,
@@ -18,9 +8,11 @@ import {
   notification,
 } from '../assets';
 
-import {PickDetailsModal} from "./";
+import { PickDetailsModal } from './';
+import { useNavigate } from 'react-router-dom';
 
 export function Header() {
+  const navigate = useNavigate();
   const searchIcon = <Icon source={SearchMinor} />;
   return (
     <>
@@ -37,7 +29,7 @@ export function Header() {
             </Stack>
             <Stack alignment="center" spacing="loose">
               {/* <Button primary>+ Add New Pack</Button> */}
-              <PickDetailsModal buttonText="+ Add New Pack"/>
+              <PickDetailsModal buttonText="+ Add New Pack" />
               <Image source={announceIcon} height={14} />
               <Image source={notification} height={14} />
               <Stack alignment="center" spacing="tight">
@@ -49,7 +41,7 @@ export function Header() {
           <Stack distribution="equalSpacing">
             <Stack spacing="loose">
               <ul className="menu-list">
-                <li className="menu-item">
+                <li onClick={() => navigate(`/`)} className="menu-item">
                   <a>Explore</a>
                   <span className="underline"></span>
                 </li>

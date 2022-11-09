@@ -1,14 +1,20 @@
-import React from "react";
-import { Stack, Image, Pagination } from "@shopify/polaris";
-import { packSamplesHomePage } from "./";
-import { HomePageStyle, VideoIcon } from "../assets";
-import { PickDetailsModal, PaginationNumber } from "./";
+import React from 'react';
+import { Stack, Image, Pagination } from '@shopify/polaris';
+import { packSamplesHomePage } from './';
+import { HomePageStyle, VideoIcon } from '../assets';
+import { PickDetailsModal, PaginationNumber } from './';
+import { useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
+  const navigate = useNavigate();
 
-    let label= <Stack distribution="center" spacing="extraTight">
-{[1,2,3].map((number,index)=><PaginationNumber key={index} number={number} />)}
+  let label = (
+    <Stack distribution="center" spacing="extraTight">
+      {[1, 2, 3].map((number, index) => (
+        <PaginationNumber key={index} number={number} />
+      ))}
     </Stack>
+  );
 
   return (
     <Stack
@@ -21,6 +27,7 @@ const HomePage = () => {
         {packSamplesHomePage.map(({ thumnailSrc, id }) => {
           return (
             <div
+              onClick={() => navigate(`/packs/${id}`)}
               key={id}
               className="packItem"
               style={{ backgroundImage: `url(${thumnailSrc})` }}
@@ -43,11 +50,11 @@ const HomePage = () => {
         label={label}
         hasPrevious
         onPrevious={() => {
-          console.log("Previous");
+          console.log('Previous');
         }}
         hasNext
         onNext={() => {
-          console.log("Next");
+          console.log('Next');
         }}
       />
     </Stack>
