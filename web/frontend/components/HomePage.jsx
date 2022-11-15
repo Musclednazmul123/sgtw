@@ -1,12 +1,54 @@
 import React from 'react';
 import { Stack, Image, Pagination } from '@shopify/polaris';
 import { packSamplesHomePage } from './';
-import { HomePageStyle, VideoIcon } from '../assets';
+import { HomePageStyle, VideoIcon, placeHolder } from '../assets';
 import { PickDetailsModal, PaginationNumber } from './';
 import { useNavigate } from 'react-router-dom';
+import { useAppQuery } from '../hooks';
 
 const HomePage = () => {
   const navigate = useNavigate();
+
+  const {
+    data,
+    // refetch: refetchProductCount,
+    // isLoading: isLoadingCount,
+    // isRefetching: isRefetchingCount,
+  } = useAppQuery({
+    url: '/api/packs',
+    reactQueryOptions: {
+      onSuccess: () => {
+        // setIsLoading(false);
+      },
+    },
+  });
+
+  let packs = null;
+  if (data) {
+    packs = data.body.data.products.edges;
+    console.log(data.body.data.products.edges);
+    packs = packs.map((pack, index) => (
+      <div
+        onClick={() =>
+          navigate(
+            `/packs/${pack.node.id.replace('gid://shopify/Product/', '')}`
+          )
+        }
+        key={`${pack.node.id}--${index}`}
+        className="packItem"
+        style={{
+          backgroundImage: `url(${
+            pack.node.featuredImage ? pack.node.featuredImage.url : placeHolder
+          })`,
+        }}
+      >
+        <div className="slider"></div>
+        <Image source={VideoIcon} width={20} height={20} />
+      </div>
+    ));
+  }
+
+  console.log(packs);
 
   let label = (
     <Stack distribution="center" spacing="extraTight">
@@ -24,19 +66,7 @@ const HomePage = () => {
       distribution="center"
     >
       <Stack distribution="center" spacing="extraLoose">
-        {packSamplesHomePage.map(({ thumnailSrc, id }) => {
-          return (
-            <div
-              onClick={() => navigate(`/packs/${id}`)}
-              key={id}
-              className="packItem"
-              style={{ backgroundImage: `url(${thumnailSrc})` }}
-            >
-              <div className="slider"></div>
-              <Image source={VideoIcon} width={20} height={20} />
-            </div>
-          );
-        })}
+        {packs}
         <PickDetailsModal
           customContent={
             <div className="newPack">

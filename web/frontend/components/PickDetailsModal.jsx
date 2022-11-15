@@ -13,13 +13,46 @@ import {
 } from '@shopify/polaris';
 import { editIcon, closeImage, modalstyle } from '../assets';
 import { MobileCancelMajor } from '@shopify/polaris-icons';
-import { useAuthenticatedFetch } from '../hooks';
+import { useAuthenticatedFetch, useAppQuery } from '../hooks';
+import { useNavigate, useParams } from 'react-router-dom';
 
-const PickDetailsModal = ({ buttonText, customContent }) => {
+//start
+const PickDetailsModal = ({ buttonText, customContent, oldproduct }) => {
+  const navigate = useNavigate();
   let [active, setActive] = useState(false);
   let [priceChecked, setPriceChecked] = useState(false);
-  let [file, setFile] = useState(null);
+  const [file, setFile] = useState(null);
+  const fetch = useAuthenticatedFetch();
+  const [title, setTitle] = useState(oldproduct ? oldproduct.title : '');
+  const [price, setPrice] = useState(
+    oldproduct ? oldproduct.variants.edges[0].node.price : ''
+  );
+  const [description, setDescription] = useState(
+    oldproduct ? oldproduct.description : ''
+  );
+  const { id } = useParams();
   // const [mainFile, setMainFile] = useState(null);
+
+  async function stageupload() {
+    console.log(file);
+    const fd = new FormData();
+    fd.append('size', file.size.toString());
+    fd.append('name', file.name);
+    fd.append('type', file.type);
+    fd.append('resource', 'IMAGE');
+    const response = await fetch('/api/stageupload/create', {
+      // Adding method type
+      method: 'POST',
+      body: fd,
+    });
+
+    if (response.ok) {
+      console.log(response);
+      return;
+    } else {
+      console.log('something went wrong');
+    }
+  }
 
   const handleDrop = useCallback(
     (_droppedFiles, acceptedFiles, rejectedFiles) => {
@@ -27,52 +60,82 @@ const PickDetailsModal = ({ buttonText, customContent }) => {
       console.log('Rejected Files' + rejectedFiles[0]);
 
       setFile(acceptedFiles[0]);
+      stageupload();
       // setMainFile(_droppedFiles[0].File);
     },
     []
   );
 
-  const fetch = useAuthenticatedFetch();
-  const [title, setTitle] = useState('');
-  const [price, setPrice] = useState('');
-
   // console.log(title);
+
+  const { refetch: refetchProductDetails } = useAppQuery({
+    url: `/api/packs/${id}`,
+  });
+
+  // handle update
+  const handleUpdate = async () => {
+    if (!oldproduct) {
+      console.log('product is is not define');
+      return;
+    }
+    const fd = new FormData();
+    fd.append(
+      'variantid',
+      oldproduct.variants.edges[0].node.id.replace(
+        'gid://shopify/ProductVariant/',
+        ''
+      )
+    );
+    if (file) {
+      fd.append('image', file);
+    }
+    fd.append('title', title);
+    fd.append('price', price);
+
+    const response = await fetch(
+      `/api/packs/${oldproduct.id.replace('gid://shopify/Product/', '')}`,
+      {
+        // Adding method type
+        method: 'PUT',
+        body: fd,
+      }
+    );
+
+    if (response.ok) {
+      setActive(false);
+      await refetchProductDetails();
+      return;
+    } else {
+      console.log('something went wrong');
+    }
+  };
+
+  // handle create
 
   const handleCreate = async () => {
     // setIsLoading(true);
     const fd = new FormData();
-    fd.append('file', file);
+    fd.append('image', file);
     fd.append('title', title);
     fd.append('price', price);
+    fd.append('description', description);
 
     console.log([...fd]);
 
     const response = await fetch('/api/packs', {
       // Adding method type
       method: 'POST',
-      // Adding body or contents to send
       body: fd,
-
-      // body: JSON.stringify({
-      //   title: title,
-      //   price: price,
-      // }),
-
-      // Adding headers to the request
-      headers: {
-        // 'Content-type': 'application/json; charset=UTF-8',
-        'Content-type': 'multipart/form-data',
-      },
     });
 
     if (response.ok) {
       console.log('product created success');
+      setActive(false);
+      setFile(null);
+      setTitle('');
+      setPrice('');
+      return navigate('/');
     } else {
-      // setIsLoading(false);
-      // setToastProps({
-      //   content: 'There was an error creating products',
-      //   error: true,
-      // });
       console.log('Something went wrong');
     }
   };
@@ -129,6 +192,7 @@ const PickDetailsModal = ({ buttonText, customContent }) => {
                       className="title-input"
                       type="text"
                       placeholder="Pack Title"
+                      value={title}
                       onChange={(e) => setTitle(e.target.value)}
                     />
                     <Select
@@ -140,13 +204,12 @@ const PickDetailsModal = ({ buttonText, customContent }) => {
                         { label: 'option 2', value: 'option2' },
                       ]}
                     />
-                    <TextField
+                    <textarea
                       type="text"
-                      autoComplete="off"
-                      label="description"
-                      labelHidden
-                      multiline={3}
+                      className="text-area-field"
                       placeholder="Descriptions"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
                     />
                     <Checkbox
                       label={<p className="checkbox">Set Price</p>}
@@ -162,7 +225,8 @@ const PickDetailsModal = ({ buttonText, customContent }) => {
                         min="0"
                         max="999999"
                         className="price"
-                        placeholder="$ 50.00"
+                        placeholder="$50.99"
+                        value={price}
                         onChange={(e) => setPrice(e.target.value)}
                       />
                     )}
@@ -212,13 +276,15 @@ const PickDetailsModal = ({ buttonText, customContent }) => {
                     </Stack>
                   </Stack>
                   <Stack distribution="center">
-                    <Button onClick={handleCreate} primary>
-                      Save
-                    </Button>
-                    {/* <input
-                      type="file"
-                      onChange={(e) => setMainFile(e.target.files[0])}
-                    /> */}
+                    {oldproduct ? (
+                      <Button onClick={handleUpdate} primary>
+                        Update
+                      </Button>
+                    ) : (
+                      <Button onClick={handleCreate} primary>
+                        Create
+                      </Button>
+                    )}
                   </Stack>
                 </Stack>
               </Form>
