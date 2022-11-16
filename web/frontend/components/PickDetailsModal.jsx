@@ -30,29 +30,9 @@ const PickDetailsModal = ({ buttonText, customContent, oldproduct }) => {
   const [description, setDescription] = useState(
     oldproduct ? oldproduct.description : ''
   );
+  const [genre, setGenre] = useState(null);
   const { id } = useParams();
   // const [mainFile, setMainFile] = useState(null);
-
-  async function stageupload() {
-    console.log(file);
-    const fd = new FormData();
-    fd.append('size', file.size.toString());
-    fd.append('name', file.name);
-    fd.append('type', file.type);
-    fd.append('resource', 'IMAGE');
-    const response = await fetch('/api/stageupload/create', {
-      // Adding method type
-      method: 'POST',
-      body: fd,
-    });
-
-    if (response.ok) {
-      console.log(response);
-      return;
-    } else {
-      console.log('something went wrong');
-    }
-  }
 
   const handleDrop = useCallback(
     (_droppedFiles, acceptedFiles, rejectedFiles) => {
@@ -60,7 +40,7 @@ const PickDetailsModal = ({ buttonText, customContent, oldproduct }) => {
       console.log('Rejected Files' + rejectedFiles[0]);
 
       setFile(acceptedFiles[0]);
-      stageupload();
+
       // setMainFile(_droppedFiles[0].File);
     },
     []
@@ -113,9 +93,11 @@ const PickDetailsModal = ({ buttonText, customContent, oldproduct }) => {
   // handle create
 
   const handleCreate = async () => {
-    // setIsLoading(true);
     const fd = new FormData();
-    fd.append('image', file);
+    if (file) {
+      fd.append('file', file);
+    }
+    // setIsLoading(true);
     fd.append('title', title);
     fd.append('price', price);
     fd.append('description', description);
@@ -141,6 +123,14 @@ const PickDetailsModal = ({ buttonText, customContent, oldproduct }) => {
   };
 
   // const imgurl = window.URL.createObjectURL(file);
+
+  //handling the modal close
+  const modalClose = () => {
+    setActive(false);
+    setFile(null);
+    setTitle('');
+    setPrice('');
+  };
 
   return (
     <>
@@ -169,7 +159,7 @@ const PickDetailsModal = ({ buttonText, customContent, oldproduct }) => {
             <button
               className="closeIcon"
               onClick={() => {
-                setActive(false);
+                modalClose();
               }}
             >
               <Icon source={MobileCancelMajor} color="base" />
@@ -199,6 +189,7 @@ const PickDetailsModal = ({ buttonText, customContent, oldproduct }) => {
                       label="Pack Title"
                       labelHidden
                       placeholder="Genre(!)"
+                      onChange={(e) => setGenre(e.target.value)}
                       options={[
                         { label: 'option 1', value: 'option1' },
                         { label: 'option 2', value: 'option2' },

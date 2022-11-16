@@ -54,7 +54,7 @@ export async function getProduct(req, res, app) {
       data: getone,
     });
 
-    console.log(product);
+    // console.log(product);
     res.send(product.body.data.product);
   } catch (error) {
     console.log(error);
@@ -74,7 +74,7 @@ export async function remProduct(req, res, app) {
       data: deleteone,
     });
 
-    console.log(product);
+    // console.log(product);
     res.status(200).send('product delete success');
   } catch (error) {
     console.log(error);
@@ -104,13 +104,95 @@ export async function updateProduct(req, res, app) {
       }`,
     });
 
-    console.log(product);
-    res.status(200).send('product delete success');
+    // console.log(product);
+    res.send(product);
   } catch (error) {
     console.log(error);
   }
 }
 
+//image stage upload
+async function productImgUp(client, data) {
+  const createStage = `mutation stagedUploadsCreate($input: [StagedUploadInput!]!) {
+    stagedUploadsCreate(input: $input) {
+      stagedTargets {
+        url
+        resourceUrl
+        parameters {
+          name
+          value
+        }
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }`;
+  try {
+    if (req.body.name) {
+      const stage = await client.query({
+        data: {
+          query: createStage,
+          variables: {
+            input: [
+              {
+                fileSize: data.size,
+                filename: data.name,
+                httpMethod: 'POST',
+                mimeType: data.type,
+                resource: data.resource,
+              },
+            ],
+          },
+        },
+      });
+
+      return stage.body.data.stagedUploadsCreate;
+    }
+  } catch (err) {
+    console.log(err);
+    return;
+  }
+}
+
+//image upload to shopify
+async function upload(client, file, productId) {
+  try {
+    const stage = await productImgUp(client, data);
+  } catch (err) {
+    console.log(err);
+  }
+  const imageUpdate = `mutation {
+    productCreateMedia(
+    media: {
+      alt: "",
+      mediaContentType: IMAGE,
+      originalSource: "${stage.resource}",
+    }, 
+    productId: "${productId}") {
+      media {
+        alt
+        mediaContentType
+        status
+      }
+    }
+  }`;
+
+  try {
+    const image = await client.query({
+      data: {
+        query: imageUpdate,
+      },
+    });
+
+    return image;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+//creating pack
 export async function createPack(req, res, app) {
   const createnew = `mutation productCreate($input: ProductInput!) {
     productCreate(input: $input) {
@@ -121,15 +203,6 @@ export async function createPack(req, res, app) {
     }
   }`;
 
-  const imageUpdate = `mutation productCreateMedia($media: [CreateMediaInput!]!, $productId: ID!) {
-    productCreateMedia(media: $media, productId: $productId) {
-      media {
-        id
-      }
-    }
-  }`;
-
-  console.log('start');
   console.log(req.file);
   // return res.send('product is not created');
   try {
@@ -146,28 +219,14 @@ export async function createPack(req, res, app) {
         },
       },
     });
-    if (false) {
-      console.log(pack.body.data.productCreate.product.id);
-      await client.query({
-        data: {
-          query: imageUpdate,
-          variables: {
-            input: {
-              productId: pack.body.data.productCreate.product.id,
-              media: {
-                alt: req.file.originalname,
-                mediaContentType: req.file.mimetype,
-                originalSource: req.file.path,
-              },
-            },
-          },
-        },
-      });
-      console.log(req.body.image);
-    }
+
+    const productId = pack.body.data.productCreate.product.id;
+    const file = req.file;
+    // console.log(pack.body.data.productCreate.product.id);
+    upload(client, file, productId);
     res.send(pack);
   } catch (error) {
-    console.log(error);
+    console.log(error.response);
   }
 }
 
@@ -222,7 +281,7 @@ export async function createStageUpload(req, res, app) {
   }`;
   try {
     const client = await getClient(req, res, app);
-    console.log('file is:', req.body.name);
+
     if (req.body.name) {
       const stage = await client.query({
         data: {
@@ -241,8 +300,7 @@ export async function createStageUpload(req, res, app) {
         },
       });
 
-      console.log(stage);
-      res.send(stage);
+      res.send({ data: stage.body.data.stagedUploadsCreate });
     }
   } catch (err) {
     console.log(err.response);
