@@ -155,6 +155,7 @@ async function productImgUp(client, file) {
 }
 
 //image upload to shopify
+// ${stage.stagedTargets[0].resourceUrl}
 async function upload(client, file, productId) {
   try {
     const stage = await productImgUp(client, file);
@@ -164,7 +165,7 @@ async function upload(client, file, productId) {
       media: {
         alt: "image",
         mediaContentType: IMAGE,
-        originalSource: "${stage.stagedTargets[0].resourceUrl}",
+        originalSource: "https://static.wixstatic.com/media/192974_3b035943874e45e9999bcf2b0b3e3374~mv2_d_5616_3744_s_4_2.jpeg/v1/fill/w_640,h_504,al_c,q_80,usm_0.66_1.00_0.01,enc_auto/192974_3b035943874e45e9999bcf2b0b3e3374~mv2_d_5616_3744_s_4_2.jpeg",
       }, 
       productId: "${productId}") {
         media {
@@ -255,52 +256,5 @@ export async function createSamples(req, res, app) {
     console.log(req.file);
   } catch (err) {
     console.log(err);
-  }
-}
-
-//creating stage upload url
-//IMAGE is resource
-export async function createStageUpload(req, res, app) {
-  const createStage = `mutation stagedUploadsCreate($input: [StagedUploadInput!]!) {
-    stagedUploadsCreate(input: $input) {
-      stagedTargets {
-        url
-        resourceUrl
-        parameters {
-          name
-          value
-        }
-      }
-      userErrors {
-        field
-        message
-      }
-    }
-  }`;
-  try {
-    const client = await getClient(req, res, app);
-
-    if (req.body.name) {
-      const stage = await client.query({
-        data: {
-          query: createStage,
-          variables: {
-            input: [
-              {
-                fileSize: req.body.size,
-                filename: req.body.name,
-                httpMethod: 'POST',
-                mimeType: req.body.type,
-                resource: req.body.resource,
-              },
-            ],
-          },
-        },
-      });
-
-      res.send({ data: stage.body.data.stagedUploadsCreate });
-    }
-  } catch (err) {
-    console.log(err.response);
   }
 }
