@@ -112,7 +112,7 @@ export async function updateProduct(req, res, app) {
 }
 
 //image stage upload
-async function productImgUp(client, data) {
+async function productImgUp(client, file) {
   const createStage = `mutation stagedUploadsCreate($input: [StagedUploadInput!]!) {
     stagedUploadsCreate(input: $input) {
       stagedTargets {
@@ -130,26 +130,24 @@ async function productImgUp(client, data) {
     }
   }`;
   try {
-    if (req.body.name) {
-      const stage = await client.query({
-        data: {
-          query: createStage,
-          variables: {
-            input: [
-              {
-                fileSize: data.size,
-                filename: data.name,
-                httpMethod: 'POST',
-                mimeType: data.type,
-                resource: data.resource,
-              },
-            ],
-          },
+    const stage = await client.query({
+      data: {
+        query: createStage,
+        variables: {
+          input: [
+            {
+              fileSize: file.size.toString(),
+              filename: file.filename,
+              httpMethod: 'POST',
+              mimeType: file.mimetype,
+              resource: 'IMAGE',
+            },
+          ],
         },
-      });
+      },
+    });
 
-      return stage.body.data.stagedUploadsCreate;
-    }
+    return stage.body.data.stagedUploadsCreate;
   } catch (err) {
     console.log(err);
     return;
@@ -159,27 +157,24 @@ async function productImgUp(client, data) {
 //image upload to shopify
 async function upload(client, file, productId) {
   try {
-    const stage = await productImgUp(client, data);
-  } catch (err) {
-    console.log(err);
-  }
-  const imageUpdate = `mutation {
-    productCreateMedia(
-    media: {
-      alt: "",
-      mediaContentType: IMAGE,
-      originalSource: "${stage.resource}",
-    }, 
-    productId: "${productId}") {
-      media {
-        alt
-        mediaContentType
-        status
+    const stage = await productImgUp(client, file);
+    console.log(stage);
+    const imageUpdate = `mutation {
+      productCreateMedia(
+      media: {
+        alt: "image",
+        mediaContentType: IMAGE,
+        originalSource: "${stage.stagedTargets[0].resourceUrl}",
+      }, 
+      productId: "${productId}") {
+        media {
+          alt
+          mediaContentType
+          status
+        }
       }
-    }
-  }`;
+    }`;
 
-  try {
     const image = await client.query({
       data: {
         query: imageUpdate,
@@ -220,10 +215,13 @@ export async function createPack(req, res, app) {
       },
     });
 
-    const productId = pack.body.data.productCreate.product.id;
-    const file = req.file;
-    // console.log(pack.body.data.productCreate.product.id);
-    upload(client, file, productId);
+    if (req.file) {
+      const productId = pack.body.data.productCreate.product.id;
+      const file = req.file;
+      // console.log(pack.body.data.productCreate.product.id);
+      const image = await upload(client, file, productId);
+      console.log(image);
+    }
     res.send(pack);
   } catch (error) {
     console.log(error.response);
