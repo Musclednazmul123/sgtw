@@ -12,6 +12,7 @@ import { PickDetailsModal } from './';
 import { useNavigate } from 'react-router-dom';
 
 export function Header() {
+  const navigate = useNavigate();
   const searchIcon = <Icon source={SearchMinor} />;
   return (
     <>
@@ -26,8 +27,8 @@ export function Header() {
                 inputMode="text"
                 placeholder="Search packs"
                 autoComplete="off"
-                onChange={onChangeHandler}
-                value={value}
+                // onChange={onChangeHandler}
+                // value={value}
                 labelHidden
               />
             </Stack>

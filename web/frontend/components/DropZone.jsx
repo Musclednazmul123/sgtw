@@ -2,7 +2,7 @@ import { DropZone, Stack, Button, Thumbnail, Caption } from '@shopify/polaris';
 import { NoteMinor } from '@shopify/polaris-icons';
 import { useState, useCallback } from 'react';
 import { packStyle } from '../assets';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export function DropsZone() {
   const [files, setFiles] = useState([]);
@@ -40,6 +40,32 @@ export function DropsZone() {
   );
 
   const navigate = useNavigate();
+  const { id } = useParams();
+
+  //api request to create variants
+  const handleCreatevariants = async () => {
+    // setIsLoading(true);
+
+    const fd = new FormData();
+    fd.append('files', files);
+    fd.append('id', id);
+    console.log(...fd);
+
+    const response = async () =>
+      await fetch(`/api/packs/samples`, {
+        // Adding method type
+        method: 'POST',
+        body: fd,
+      });
+
+    if (response.ok) {
+      console.log('samples created success');
+      setFiles(null);
+      return navigate(-1);
+    } else {
+      console.log('Something went wrong');
+    }
+  };
 
   return (
     <>
@@ -53,7 +79,9 @@ export function DropsZone() {
             <Button destructive>Go Back</Button>
           </span>
           <span>
-            <Button primary>Upload</Button>
+            <Button primary onClick={() => handleCreatevariants()}>
+              Upload
+            </Button>
           </span>
         </Stack>
       </div>
