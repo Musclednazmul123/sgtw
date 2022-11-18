@@ -1,15 +1,15 @@
-import { Button, Card, Icon, Stack } from '@shopify/polaris';
+import { Button, Card, Icon, Stack } from "@shopify/polaris";
 import {
   packStyle,
   musicIcon,
   downloadIcon,
   packThumbnail,
   placeHolder,
-} from '../assets';
-import { EditMajor } from '@shopify/polaris-icons';
-import { PickDetailsModal, EmptyState, PackDetailsList } from './';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useAppQuery, useAuthenticatedFetch } from '../hooks';
+} from "../assets";
+import { EditMajor } from "@shopify/polaris-icons";
+import { PickDetailsModal, EmptyState, PackDetailsList } from "./";
+import { useNavigate, useParams } from "react-router-dom";
+import { useAppQuery, useAuthenticatedFetch } from "../hooks";
 
 export function PackDetails() {
   const pack = undefined;
@@ -34,11 +34,11 @@ export function PackDetails() {
 
   const handleDelete = async () => {
     const deleted = await fetch(`/api/packs/${id}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
 
     if (deleted.ok) {
-      return navigate('/');
+      return navigate("/");
     }
   };
 
@@ -46,7 +46,7 @@ export function PackDetails() {
   if (data) {
     product = data;
   } else {
-    return <p>Loading...</p>;
+    return <PackDetailsList />;
   }
 
   console.log(product);
@@ -83,7 +83,7 @@ export function PackDetails() {
                 <h2 className="pack-title">{product.title}</h2>
                 <Stack alignment="center">
                   <Stack spacing="tight">
-                    <img src={musicIcon} style={{ marginTop: '2px' }} />
+                    <img src={musicIcon} style={{ marginTop: "2px" }} />
                     <p className="pack-caption">Hip Hop</p>
                     <p className="pack-caption bold-caption">
                       ${product.variants.edges[0].node.price}
@@ -105,8 +105,8 @@ export function PackDetails() {
                     onClick={() =>
                       navigate(
                         `/samples/${product.id.replace(
-                          'gid://shopify/Product/',
-                          ''
+                          "gid://shopify/Product/",
+                          ""
                         )}`
                       )
                     }
@@ -123,7 +123,7 @@ export function PackDetails() {
               <Stack spacing="tight">
                 <p className="pack-caption">
                   Downloads: <span className="bold-caption">5.5k</span>
-                </p>{' '}
+                </p>{" "}
                 <img src={downloadIcon} color="base" />
               </Stack>
               <p className="pack-caption">
