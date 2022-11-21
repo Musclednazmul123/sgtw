@@ -11,4 +11,5 @@ export { default as PageNumbers } from "./PageNumbers";
 export { default as AllPacks } from "./AllPacks";
 export { default as PaginationNumber } from "./PaginationNumber";
 export {default as PackDetailsIndexTable} from "./PackDetailsIndexTable";
+export {default as PacksList} from "./PacksList";
 export * from "./providers";

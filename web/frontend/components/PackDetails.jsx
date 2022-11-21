@@ -46,7 +46,7 @@ export function PackDetails() {
   if (data) {
     product = data;
   } else {
-    return <PackDetailsList />;
+    return <p>Loading...</p>;
   }
 
   console.log(product);
@@ -133,7 +133,7 @@ export function PackDetails() {
           </div>
         </Card.Section>
         <Card.Section>
-          {/* {pack ? 'pack is render' : <PackDetailsList />} */}
+          {data && <PackDetailsList />}
         </Card.Section>
       </Card>
     </>

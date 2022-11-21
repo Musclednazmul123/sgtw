@@ -3,8 +3,6 @@ import { Stack, Pagination } from "@shopify/polaris";
 import { packSamples, PageNumbers, PackDetailsIndexTable, EmptyState } from ".";
 
 const PackDetailsList = () => {
-  let [packs, setPacks] = useState(null);
-  let [loading, setLoading] = useState(false);
   let [currentPage, setCurrentPage] = useState(1);
   let [packSamplesPerPage] = useState(5);
 
@@ -13,10 +11,6 @@ const PackDetailsList = () => {
     console.log("Inside paginate function");
     setCurrentPage(number);
   };
-
-  if (loading) {
-    return <p>Loading....</p>;
-  }
 
   let indexOfLastPackSample = currentPage * packSamplesPerPage;
   let indexOfFirstPackSample = indexOfLastPackSample - packSamplesPerPage;
