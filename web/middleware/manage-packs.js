@@ -4,8 +4,8 @@ import {
   createPack,
   remProduct,
   updateProduct,
-  createSamples,
 } from '../helpers/packs.js';
+import { createSamples } from '../helpers/samples.js';
 import multer from 'multer';
 
 // const storage = multer.diskStorage({
@@ -19,10 +19,11 @@ import multer from 'multer';
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, './tmp/data');
+    cb(null, './public/files');
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + file.originalname.replace(' ', '-');
+    const uniqueSuffix =
+      Date.now() + '-' + file.originalname.replace(/\s/g, '-');
     cb(null, uniqueSuffix);
   },
 });
@@ -35,10 +36,10 @@ export default function managePacks(app) {
   app.get('/api/packs', (req, res) => getAll(req, res, app));
   app.get('/api/packs/:id', (req, res) => getProduct(req, res, app));
   app.delete('/api/packs/:id', (req, res) => remProduct(req, res, app));
-  app.put('/api/packs/:id', upload.none(), (req, res) =>
+  app.put('/api/packs/:id', upload.single('image'), (req, res) =>
     updateProduct(req, res, app)
   );
-  app.post('/api/packs', upload.single('file'), (req, res) =>
+  app.post('/api/packs', upload.single('image'), (req, res) =>
     createPack(req, res, app)
   );
 
@@ -48,9 +49,7 @@ export default function managePacks(app) {
   // );
 
   //adding samples
-  app.post(
-    '/api/packs/samples',
-    upload.fields([{ name: 'files', maxCount: 10 }]),
-    (req, res) => createSamples(req, res, app)
+  app.post('/api/packs/samples', upload.single('file'), (req, res) =>
+    createSamples(req, res, app)
   );
 }

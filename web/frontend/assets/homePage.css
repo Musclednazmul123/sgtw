@@ -52,3 +52,6 @@ position: relative;
     font-size: 12px;
     color: #8C9196;
 }
+.absolute{
+  position: absolute;
+}

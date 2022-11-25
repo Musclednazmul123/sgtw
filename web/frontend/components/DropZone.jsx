@@ -3,9 +3,12 @@ import { NoteMinor } from '@shopify/polaris-icons';
 import { useState, useCallback } from 'react';
 import { packStyle } from '../assets';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useAuthenticatedFetch, useAppQuery } from '../hooks';
 
 export function DropsZone() {
   const [files, setFiles] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const fetch = useAuthenticatedFetch();
 
   const handleDropZoneDrop = useCallback(
     (_dropFiles, acceptedFiles, _rejectedFiles) =>
@@ -15,8 +18,8 @@ export function DropsZone() {
 
   const validImageTypes = ['image/gif', 'image/jpeg', 'image/png'];
 
-  const fileUpload = !files.length && <DropZone.FileUpload />;
-  const uploadedFiles = files.length > 0 && (
+  const fileUpload = !files?.length && <DropZone.FileUpload />;
+  const uploadedFiles = files?.length > 0 && (
     <div style={{ padding: '0' }}>
       <Stack vertical>
         {files.map((file, index) => (
@@ -43,29 +46,62 @@ export function DropsZone() {
   const { id } = useParams();
 
   //api request to create variants
-  const handleCreatevariants = async () => {
-    // setIsLoading(true);
 
-    const fd = new FormData();
-    fd.append('files', files);
-    fd.append('id', id);
-    console.log(...fd);
+  const [count, setCount] = useState(0);
+  let total = files?.length || 0;
+  const handleCreateSamples = async () => {
+    if (files) {
+      setLoading(true);
+      //for loop for batch upload
+      for (let index = 0; index < total; index++) {
+        let fd = new FormData();
+        fd.append('file', files[index]);
+        fd.append('id', id);
+        //send request to create
+        const response = await fetch(`/api/packs/samples`, {
+          // Adding method type
+          method: 'POST',
+          body: fd,
+        });
+        console.log(response);
+        if (response.ok) {
+          console.log('samples created success');
 
-    const response = async () =>
-      await fetch(`/api/packs/samples`, {
-        // Adding method type
-        method: 'POST',
-        body: fd,
-      });
-
-    if (response.ok) {
-      console.log('samples created success');
-      setFiles(null);
-      return navigate(-1);
+          if (index + 1 >= total) {
+            setLoading(false);
+            setFiles(null);
+            return navigate(-1);
+          }
+          setCount(index + 1);
+        } else {
+          console.log('Something went wrong');
+          break;
+        }
+      }
+      //end the forloop here
     } else {
-      console.log('Something went wrong');
+      return;
     }
   };
+
+  // useEffect(() => {
+  //   const statusx = { count } / { total };
+  //   if (loading) {
+  //     document.getElementById('upload-status-aper-here').innerHTML =
+  //       statusx.toString();
+  //   }
+  // }, [count]);
+
+  if (loading) {
+    return (
+      <div>
+        uploading...
+        <span id="upload-status-aper-here">
+          {count + 1} / {total}
+        </span>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -79,7 +115,7 @@ export function DropsZone() {
             <Button destructive>Go Back</Button>
           </span>
           <span>
-            <Button primary onClick={() => handleCreatevariants()}>
+            <Button primary onClick={() => handleCreateSamples()}>
               Upload
             </Button>
           </span>

@@ -1,15 +1,16 @@
-import { Button, Card, Icon, Stack } from "@shopify/polaris";
+import { Button, Card, Icon, Stack } from '@shopify/polaris';
 import {
   packStyle,
   musicIcon,
   downloadIcon,
   packThumbnail,
   placeHolder,
-} from "../assets";
-import { EditMajor } from "@shopify/polaris-icons";
-import { PickDetailsModal, EmptyState, PackDetailsList } from "./";
-import { useNavigate, useParams } from "react-router-dom";
-import { useAppQuery, useAuthenticatedFetch } from "../hooks";
+} from '../assets';
+import { EditMajor } from '@shopify/polaris-icons';
+import { PickDetailsModal, EmptyState, PackDetailsList } from './';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useAppQuery, useAuthenticatedFetch } from '../hooks';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 export function PackDetails() {
   const pack = undefined;
@@ -32,22 +33,24 @@ export function PackDetails() {
     },
   });
 
-  const handleDelete = async () => {
-    const deleted = await fetch(`/api/packs/${id}`, {
-      method: "DELETE",
-    });
-
-    if (deleted.ok) {
-      return navigate("/");
-    }
-  };
-
   let product = null;
   if (data) {
     product = data;
+    // console.log('data is: ' + data._id);
+    // return <p>data...</p>;
   } else {
     return <p>Loading...</p>;
   }
+
+  const handleDelete = async () => {
+    const deleted = await fetch(`/api/packs/${id}`, {
+      method: 'DELETE',
+    });
+
+    if (deleted.ok) {
+      return navigate('/');
+    }
+  };
 
   console.log(product);
 
@@ -64,16 +67,13 @@ export function PackDetails() {
                   </div>
                   <p>Change Pack Thumbnail</p>
                 </div>
-                <div
-                  className="pack-thumbnail"
-                  style={{
-                    backgroundImage: `url(${
-                      product.featuredImage
-                        ? product.featuredImage.url
-                        : placeHolder
-                    })`,
-                  }}
-                ></div>
+                <div className="pack-thumbnail">
+                  <LazyLoadImage
+                    src={product.thumbnail ? product.thumbnail : placeHolder}
+                    width={166}
+                    effect="blur"
+                  />
+                </div>
                 <small>
                   Accepts:
                   <i> png, jpg, svg, jpeg</i>
@@ -83,10 +83,10 @@ export function PackDetails() {
                 <h2 className="pack-title">{product.title}</h2>
                 <Stack alignment="center">
                   <Stack spacing="tight">
-                    <img src={musicIcon} style={{ marginTop: "2px" }} />
+                    <img src={musicIcon} style={{ marginTop: '2px' }} />
                     <p className="pack-caption">Hip Hop</p>
                     <p className="pack-caption bold-caption">
-                      ${product.variants.edges[0].node.price}
+                      ${product.price}
                     </p>
                   </Stack>
                   <PickDetailsModal
@@ -96,17 +96,18 @@ export function PackDetails() {
                   />
                 </Stack>
                 <p className="pack-sub-caption">
-                  *This pack can hold 250 samples, {product.totalVariants} added
-                  and {250 - parseInt(product.totalVariants)} left
+                  total variant
+                  {/* *This pack can hold 250 samples, {product.totalVariants} added
+                  and {250 - parseInt(product.totalVariants)} left */}
                 </p>
                 <p className="pack-caption">{product.description}</p>
                 <Stack>
                   <span
                     onClick={() =>
                       navigate(
-                        `/samples/${product.id.replace(
-                          "gid://shopify/Product/",
-                          ""
+                        `/samples/${product.productId.replace(
+                          'gid://shopify/Product/',
+                          ''
                         )}`
                       )
                     }
@@ -123,7 +124,7 @@ export function PackDetails() {
               <Stack spacing="tight">
                 <p className="pack-caption">
                   Downloads: <span className="bold-caption">5.5k</span>
-                </p>{" "}
+                </p>{' '}
                 <img src={downloadIcon} color="base" />
               </Stack>
               <p className="pack-caption">
@@ -133,7 +134,7 @@ export function PackDetails() {
           </div>
         </Card.Section>
         <Card.Section>
-          {data && <PackDetailsList />}
+          {/* {pack ? 'pack is render' : <PackDetailsList />} */}
         </Card.Section>
       </Card>
     </>

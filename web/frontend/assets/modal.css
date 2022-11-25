@@ -96,3 +96,14 @@
   background-color: white;
   border-radius: 5px;
 }
+
+.absolute{
+  position: absolute;
+}
+.topShift{
+  margin-top: -118px;
+}
+
+.fileContainter img{
+  object-fit: cover;
+}
