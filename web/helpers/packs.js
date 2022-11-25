@@ -1,4 +1,7 @@
 import getClient from '../middleware/get-client.js';
+import { uploadFileToS3, deletefiles3 } from './file-up-dos.js';
+import { packsModel } from '../model/pack.model.js';
+import fs from 'fs';
 
 //getting all products or packs
 export async function getAll(req, res, app) {
@@ -16,17 +19,20 @@ export async function getAll(req, res, app) {
   }`;
 
   try {
-    const client = await getClient(req, res, app);
-    const packs = await client.query({
-      data: queryString,
-    });
+    // const client = await getClient(req, res, app);
+    // const packs = await client.query({
+    //   data: queryString,
+    // });
+    const packs = await packsModel.find();
 
-    res.send(packs);
+    // console.log('get all pack: ' + packs);
+    res.send({ pack: packs });
   } catch (error) {
     console.log(error);
   }
 }
 
+//get single product
 export async function getProduct(req, res, app) {
   const getone = `query {
     product(id: "gid:\/\/shopify\/Product\/${req.params.id}") {
@@ -54,13 +60,18 @@ export async function getProduct(req, res, app) {
       data: getone,
     });
 
-    // console.log(product);
-    res.send(product.body.data.product);
+    const pack = await packsModel
+      .findOne({ productId: `gid://shopify/Product/${req.params.id}` })
+      .exec();
+
+    console.log(pack);
+    res.send(pack);
   } catch (error) {
     console.log(error);
   }
 }
 
+//delete product
 export async function remProduct(req, res, app) {
   const deleteone = `mutation {
     productDelete(input: {id: "gid:\/\/shopify\/Product\/${req.params.id}"}) {
@@ -74,13 +85,30 @@ export async function remProduct(req, res, app) {
       data: deleteone,
     });
 
-    // console.log(product);
+    console.log('product is: ' + product);
+    const fileUrl = await packsModel
+      .findOne({ productId: `gid://shopify/Product/${req.params.id}` })
+      .exec();
+    //delete the thumbnails
+    if (fileUrl.thumbnail) {
+      const deletefiles = deletefiles3(fileUrl.thumbnail);
+      console.log('delete file is called:' + deletefiles);
+    }
+
+    console.log('file url: ' + fileUrl.thumbnail);
+    // delete product from database
+    const pack = await packsModel.deleteOne({
+      productId: `gid://shopify/Product/${req.params.id}`,
+    });
+
+    console.log('Delete pack: ' + pack);
     res.status(200).send('product delete success');
   } catch (error) {
     console.log(error);
   }
 }
 
+//update product
 export async function updateProduct(req, res, app) {
   //gid:\/\/shopify\/Product\/${req.params.id}
   try {
@@ -104,87 +132,27 @@ export async function updateProduct(req, res, app) {
       }`,
     });
 
+    if (req.file) {
+      const productId = `gid:\/\/shopify\/Product\/${req.params.id}`;
+      const file = req.file;
+      // console.log(pack.body.data.productCreate.product.id);
+
+      // update image from digital ocean
+      const stage = await uploadFileToS3({
+        fileName: file.filename,
+        contentType: file.mimetype,
+        destination: file.path,
+      });
+      console.log(stage.Url);
+
+      fs.unlinkSync(file.path);
+    }
+    // update the pack info to our database
+
     // console.log(product);
     res.send(product);
   } catch (error) {
     console.log(error);
-  }
-}
-
-//image stage upload
-async function productImgUp(client, file) {
-  const createStage = `mutation stagedUploadsCreate($input: [StagedUploadInput!]!) {
-    stagedUploadsCreate(input: $input) {
-      stagedTargets {
-        url
-        resourceUrl
-        parameters {
-          name
-          value
-        }
-      }
-      userErrors {
-        field
-        message
-      }
-    }
-  }`;
-  try {
-    const stage = await client.query({
-      data: {
-        query: createStage,
-        variables: {
-          input: [
-            {
-              fileSize: file.size.toString(),
-              filename: file.filename,
-              httpMethod: 'POST',
-              mimeType: file.mimetype,
-              resource: 'IMAGE',
-            },
-          ],
-        },
-      },
-    });
-
-    return stage.body.data.stagedUploadsCreate;
-  } catch (err) {
-    console.log(err);
-    return;
-  }
-}
-
-//image upload to shopify
-// ${stage.stagedTargets[0].resourceUrl}
-async function upload(client, file, productId) {
-  try {
-    const stage = await productImgUp(client, file);
-    console.log(stage);
-    const imageUpdate = `mutation {
-      productCreateMedia(
-      media: {
-        alt: "image",
-        mediaContentType: IMAGE,
-        originalSource: "https://static.wixstatic.com/media/192974_3b035943874e45e9999bcf2b0b3e3374~mv2_d_5616_3744_s_4_2.jpeg/v1/fill/w_640,h_504,al_c,q_80,usm_0.66_1.00_0.01,enc_auto/192974_3b035943874e45e9999bcf2b0b3e3374~mv2_d_5616_3744_s_4_2.jpeg",
-      }, 
-      productId: "${productId}") {
-        media {
-          alt
-          mediaContentType
-          status
-        }
-      }
-    }`;
-
-    const image = await client.query({
-      data: {
-        query: imageUpdate,
-      },
-    });
-
-    return image;
-  } catch (err) {
-    console.log(err);
   }
 }
 
@@ -216,45 +184,33 @@ export async function createPack(req, res, app) {
       },
     });
 
+    let imagethumb;
+    const productId = pack.body.data.productCreate.product.id;
     if (req.file) {
-      const productId = pack.body.data.productCreate.product.id;
       const file = req.file;
       // console.log(pack.body.data.productCreate.product.id);
-      const image = await upload(client, file, productId);
-      console.log(image);
+      const stage = await uploadFileToS3({
+        fileName: file.filename,
+        contentType: file.mimetype,
+        destination: file.path,
+      });
+      console.log(stage.Url);
+
+      imagethumb = stage.Url;
+      fs.unlinkSync(file.path);
     }
+    // save the pack info to our database
+    const savepack = new packsModel({
+      productId: productId,
+      title: req.body.title,
+      description: req.body.description || '',
+      price: parseFloat(req.body.price || 0),
+      thumbnail: imagethumb || '',
+    });
+
+    savepack.save();
     res.send(pack);
   } catch (error) {
-    console.log(error.response);
-  }
-}
-
-//handle samples creation
-// id: "gid:\/\/shopify\/ProductVariant\/${req.body.variantid}",
-
-export async function createSamples(req, res, app) {
-  try {
-    for (let i = 0; i < req.files.length(); i++) {
-      console.log(req.files[i]);
-    }
-    // const client = await getClient(req, res, app);
-    // const sample = await client.query({
-    //   data: {
-    //     query: `mutation {
-    //       productUpdate(input: {
-    //         id: "gid:\/\/shopify\/Product\/${req.params.id}",
-    //         variants: [
-    //           {
-    //             title: ${req.body.title}
-    //             price: ${req.body.price || 0}
-    //           }
-    //         ],
-    //       }
-    //     }`,
-    //   },
-    // });
-    console.log(req.file);
-  } catch (err) {
-    console.log(err);
+    console.log(error);
   }
 }

@@ -15,6 +15,7 @@ import { editIcon, closeImage, modalstyle } from '../assets';
 import { MobileCancelMajor } from '@shopify/polaris-icons';
 import { useAuthenticatedFetch, useAppQuery } from '../hooks';
 import { useNavigate, useParams } from 'react-router-dom';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 //start
 const PickDetailsModal = ({ buttonText, customContent, oldproduct }) => {
@@ -24,9 +25,7 @@ const PickDetailsModal = ({ buttonText, customContent, oldproduct }) => {
   const [file, setFile] = useState(null);
   const fetch = useAuthenticatedFetch();
   const [title, setTitle] = useState(oldproduct ? oldproduct.title : '');
-  const [price, setPrice] = useState(
-    oldproduct ? oldproduct.variants.edges[0].node.price : ''
-  );
+  const [price, setPrice] = useState(oldproduct ? oldproduct.price : '');
   const [description, setDescription] = useState(
     oldproduct ? oldproduct.description : ''
   );
@@ -52,6 +51,10 @@ const PickDetailsModal = ({ buttonText, customContent, oldproduct }) => {
     url: `/api/packs/${id}`,
   });
 
+  const { refetch: refetchProducts } = useAppQuery({
+    url: '/api/packs',
+  });
+
   // handle update
   const handleUpdate = async () => {
     if (!oldproduct) {
@@ -73,7 +76,10 @@ const PickDetailsModal = ({ buttonText, customContent, oldproduct }) => {
     fd.append('price', price);
 
     const response = await fetch(
-      `/api/packs/${oldproduct.id.replace('gid://shopify/Product/', '')}`,
+      `/api/packs/${oldproduct.productId.replace(
+        'gid://shopify/Product/',
+        ''
+      )}`,
       {
         // Adding method type
         method: 'PUT',
@@ -95,7 +101,7 @@ const PickDetailsModal = ({ buttonText, customContent, oldproduct }) => {
   const handleCreate = async () => {
     const fd = new FormData();
     if (file) {
-      fd.append('file', file);
+      fd.append('image', file);
     }
     // setIsLoading(true);
     fd.append('title', title);
@@ -116,6 +122,7 @@ const PickDetailsModal = ({ buttonText, customContent, oldproduct }) => {
       setFile(null);
       setTitle('');
       setPrice('');
+      await refetchProducts();
       return navigate('/');
     } else {
       console.log('Something went wrong');
@@ -132,6 +139,7 @@ const PickDetailsModal = ({ buttonText, customContent, oldproduct }) => {
     setPrice('');
   };
 
+  const preview = file ? true : oldproduct ? true : false;
   return (
     <>
       {(buttonText && (
@@ -230,22 +238,29 @@ const PickDetailsModal = ({ buttonText, customContent, oldproduct }) => {
                         accept="image/*"
                         onDrop={handleDrop}
                       >
-                        {!file && <DropZone.FileUpload />}
-                        {file && (
-                          <div
-                            className="fileContainter"
-                            style={{
-                              backgroundImage: `url(${window.URL.createObjectURL(
+                        {!preview && <DropZone.FileUpload />}
+                        {preview && (
+                          <div className={`fileContainter`}>
+                            <LazyLoadImage
+                              src={
                                 file
-                              )})`,
-                            }}
-                          >
-                            <p className="fileChangeTitle">Change</p>
-                            <Image
-                              source={editIcon}
-                              width="13px"
-                              height="13px"
+                                  ? window.URL.createObjectURL(file)
+                                  : oldproduct
+                                  ? oldproduct.thumbnail
+                                  : ''
+                              }
+                              width={258}
+                              height={118}
+                              effect="blur"
                             />
+                            <p className="fileChangeTitle absolute">Change</p>
+                            <div className="absolute">
+                              <Image
+                                source={editIcon}
+                                width="13px"
+                                height="13px"
+                              />
+                            </div>
                           </div>
                         )}
                       </DropZone>

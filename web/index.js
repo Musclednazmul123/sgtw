@@ -211,7 +211,7 @@ export async function createServer(
 }
 
 async function server() {
-  const db_string = undefined;
+  const db_string = process.env.DB || undefined;
   try {
     await connectDB(db_string);
     const { app } = await createServer();
