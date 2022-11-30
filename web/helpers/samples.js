@@ -23,7 +23,7 @@ export async function createSamples(req, res, app) {
     const client = await getClient(req, res, app);
     const data = await client.query({
       data: {
-        query: `mutation productVariantCreate($input: ProductVariantInput!) {
+        "query": `mutation productVariantCreate($input: ProductVariantInput!) {
           productVariantCreate(input: $input) {
             product {
               id
@@ -53,28 +53,30 @@ export async function createSamples(req, res, app) {
             }
           }
         }`,
-        variables: {
-          input: {
-            inventoryItem: {
-              cost: 0.0,
-              tracked: false,
+        "variables": {
+          "input": {
+            "inventoryItem": {
+              "cost": 50,
+              "tracked": false
             },
-            inventoryPolicy: 'DENY',
-            inventoryQuantities: {
-              availableQuantity: 1000,
-              locationId: 'gid://shopify/Location/67371466892',
+            "inventoryPolicy": "DENY",
+            "inventoryQuantities": {
+              "availableQuantity": 1000,
+              "locationId": "gid://shopify/Location/67371466892"
             },
-            price: 0.0,
-            productId: `gid:\/\/shopify\/Product\/${req.params.id}`,
-            requiresShipping: false,
-            options: 'Samples',
-          },
+            "price": 0.0,
+            "productId": `gid:\/\/shopify\/Product\/${req.body.id}`,
+            "requiresShipping": false,
+            "options": `${req.file.filename}`
+          }
         },
       },
     });
-
+    
     // save the data to mongo db database
 
+    console.log(req.body.id)
+    console.log(data.body.data.productVariantCreate)
     return res.send(data);
   } catch (err) {
     console.log(err.response);

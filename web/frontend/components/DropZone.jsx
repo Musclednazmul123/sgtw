@@ -50,7 +50,7 @@ export function DropsZone() {
   const [count, setCount] = useState(0);
   let total = files?.length || 0;
   const handleCreateSamples = async () => {
-    if (files) {
+    if (files.length>=1) {
       setLoading(true);
       //for loop for batch upload
       for (let index = 0; index < total; index++) {

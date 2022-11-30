@@ -211,7 +211,7 @@ export async function createServer(
 }
 
 async function server() {
-  const db_string = process.env.DB || undefined;
+  const db_string = 'mongodb+srv://dev-shephbeats:dev-shephbeats@cluster0.zht1eqw.mongodb.net/?retryWrites=true&w=majority'|| undefined;
   try {
     await connectDB(db_string);
     const { app } = await createServer();
