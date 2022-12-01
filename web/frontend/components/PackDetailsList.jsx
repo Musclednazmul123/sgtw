@@ -1,33 +1,26 @@
 import React, { useState } from "react";
 import {
   Filters,
-  IndexTable,
   Stack,
-  Image,
-  Icon,
-  Badge,
-  useIndexResourceState,
-  Pagination,
   TextField,
   Button,
 } from "@shopify/polaris";
-import { packSamples, PaginationNumber } from ".";
+
 import { packDetailsListStyle, VideoIcon } from "../assets";
-import { ImportMinor, SortMinor } from "@shopify/polaris-icons";
+import { ImportMinor, SortMinor, CircleDownMajor } from "@shopify/polaris-icons";
 
-let columnHeading = ["Samples", "Price", "Downloads", "Sales", "Status"];
+const PackDetailsList = ({pack}) => {
 
-const PackDetailsList = () => {
+  console.log("this is pack list page"+pack.variants)
   const [queryValue, setQueryValue] = useState(null);
 
-  let label = (
-    <Stack distribution="center" spacing="extraTight">
-      {[1, 2, 3].map((number, index) => (
-        <PaginationNumber key={index} number={number} />
-      ))}
-    </Stack>
-  );
+  const [page, setPage] = useState(1)
+  const sampleperpage = 10
+  const totalpage = Math.ceil(pack.variants.length/sampleperpage)
+  const slice =  pack.variants.length>sampleperpage*page?sampleperpage*page:pack.variants.length
+  const variants = totalpage>1? pack.variants.slice(slice-sampleperpage, slice): pack.variants
 
+  console.log(variants)
   let filters = [
     {
       key: "actions",
@@ -71,61 +64,45 @@ const PackDetailsList = () => {
     },
   ];
 
-  const resourceName = {
-    singular: "pack",
-    plural: "packs",
-  };
-
-  const { selectedResources, allResourcesSelected, handleSelectionChange } =
-    useIndexResourceState(packSamples);
-
-  let rowMarkup = packSamples.map(
-    (
-      { id, thumnailSrc, sampleCaption, price, downloads, sales, status },
-      index
-    ) => {
-      return (
-        <IndexTable.Row
-          id={id}
-          key={id}
-          position={index}
-          selected={selectedResources.includes(id)}
-        >
-          <IndexTable.Cell className="firstCell">
-            <Stack spacing="loose" alignment="center">
-              <div
-                className="packSampleItemDescContainer"
-                style={{ backgroundImage: `url(${thumnailSrc})` }}
-              >
-                <Image source={VideoIcon} />
-              </div>
-              <p className="sampleCaption">{sampleCaption}</p>
-            </Stack>
-          </IndexTable.Cell>
-          <IndexTable.Cell>
-            <p className="sampleCaption">{`$${price}`}</p>
-          </IndexTable.Cell>
-          <IndexTable.Cell>
-            <Stack spacing="extraTight" alignment="center">
-              <Icon source={ImportMinor} color="subdued" />
-              <p className="sampleCaption">{downloads}</p>
-            </Stack>
-          </IndexTable.Cell>
-          <IndexTable.Cell>
-            <p className="sampleCaption">{`$${sales}`}</p>
-          </IndexTable.Cell>
-          <IndexTable.Cell>
-            {status == "active" ? (
-              <Badge status="success">Active</Badge>
-            ) : (
-              <Badge status="critical">Disabled</Badge>
-            )}
-          </IndexTable.Cell>
-        </IndexTable.Row>
-      );
+  const handlepaginate =(prams)=>{
+    if (prams=='next'){
+      if (totalpage<=page+1){
+        document.getElementById('next-page-button').disabled = true
+        document.getElementById('previous-page-button').disabled = false
+        setPage(totalpage)
+      } else{
+        document.getElementById('next-page-button').disabled = false
+        document.getElementById('previous-page-button').disabled = true
+        setPage(page+1)
+      }
+    } else if(prams=='previous'){
+      if (page-1<=1){
+        document.getElementById('previous-page-button').disabled = true
+        document.getElementById('next-page-button').disabled = false
+        setPage(1)
+      } else{
+        document.getElementById('previous-page-button').disabled = false
+        document.getElementById('next-page-button').disabled = true
+        setPage(page-1)
+      }
+    } else{
+      setPage(prams)
+      if (prams==1){
+        document.getElementById('previous-page-button').disabled = true
+        document.getElementById('next-page-button').disabled = false
+        
+      } else if(prams==totalpage) {
+        document.getElementById('previous-page-button').disabled = false
+        document.getElementById('next-page-button').disabled = true
+      } else{
+        document.getElementById('previous-page-button').disabled = false
+        document.getElementById('next-page-button').disabled = false
+      }
     }
-  );
+  }
+  //all the api request send from here
 
+  const pages = Array.from({length:totalpage}, (v,k)=>k+1)
   return (
     <Stack vertical alignment="fill" spacing="extraLoose" distribution="center">
       <div className="filterWrapper">
@@ -139,23 +116,31 @@ const PackDetailsList = () => {
         </div>
         <Button icon={SortMinor}>Sort</Button>
       </div>
-      <IndexTable
-        resourceName={resourceName}
-        itemCount={packSamples.length}
-        headings={columnHeading.map((heading, index) => {
-          return {
-            title: <p className="columnHeading">{heading}</p>,
-            id: index,
-          };
-        })}
-        onSelectionChange={handleSelectionChange}
-        selectedItemsCount={
-          allResourcesSelected ? "All" : selectedResources.length
-        }
-      >
-        {rowMarkup}
-      </IndexTable>
-      <Stack distribution="center">
+      {/* There should be render the   */}
+
+      <table className="samples-table">
+        <tr className="active-header">
+          <th className="th-check"><input type={'checkbox'} id='samples-selected-status' /></th>
+          <th className="th-smpl">Samples</th>
+          <th className="th-price">Price</th>
+          <th className="th-download">Downloads</th>
+          <th className="th-sales">Sales</th>
+          <th className="th-status">Status</th>
+        </tr>
+        {/* table for samples */}
+        {variants.map((sample)=>(
+        <tr key={sample.variant_id}>
+          <td className="th-check"><input type={'checkbox'} id={sample.variant_id} /></td>
+          <td className="th-smpl"><img src={pack.thumbnail} width='60px' height='40px' loading="lazy"/>  <p>{sample.title}</p></td>
+          <td className="th-price">${sample.price}</td>
+          <td className="th-download"><CircleDownMajor width={10} height={10} />{sample.downloads}</td>
+          <td className="th-sales">${sample.sales}</td>
+          <td className="th-status">{sample.status?<span className="variant-status-active">Active</span>:<span className="variant-status-draft">Draft</span>}</td>
+        </tr>
+        ))}
+      </table>
+
+      {/* <Stack distribution="center">
         <Pagination
           label={label}
           hasPrevious
@@ -167,7 +152,13 @@ const PackDetailsList = () => {
             console.log("Next");
           }}
         />
-      </Stack>
+      </Stack> */}
+      {totalpage>1&&<div className="pagination">
+        {/* pagination will render here */}
+        <button className={page==1?"button btn-disable":"button"} id='previous-page-button' onClick={(e)=>handlepaginate('previous')}  >prev</button>
+        {pages.map((i)=><button onClick={(e)=>handlepaginate(i)} >{i}</button>)}
+        <button id='next-page-button' onClick={(e)=>handlepaginate('next')} >next</button>
+        </div>}
     </Stack>
   );
 };

@@ -31,3 +31,71 @@
 .filter {
   flex: 1;
 }
+
+
+.samples-table{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.samples-table tr{
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 10px;
+  text-align: left;
+}
+
+.samples-table tr:hover{
+  background-color: white;
+}
+
+.th-smpl{
+  width: 40%;
+  display: flex;
+  gap: 10px;
+}
+.th-smpl img{
+  border-radius: 5px;
+}
+.th-price{
+  width: 15%;
+}
+.th-download{
+  width: 15%;
+}
+.th-sales{
+  width: 15%;
+}
+.th-status{
+  width: 15%;
+}
+
+.active-header{
+  background-color: lightgray;
+}
+
+.active-header:hover{
+  background-color: lightgray !important;
+}
+
+.btn-disable{
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.pagination{
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.variant-status-active{
+  color: green;
+  padding: 5px;
+  border: 1px solid green;
+}

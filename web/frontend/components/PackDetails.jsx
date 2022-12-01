@@ -96,9 +96,8 @@ export function PackDetails() {
                   />
                 </Stack>
                 <p className="pack-sub-caption">
-                  total variant
-                  {/* *This pack can hold 250 samples, {product.totalVariants} added
-                  and {250 - parseInt(product.totalVariants)} left */}
+                 *This pack can hold 250 samples, {product.variants.length} added
+                  and {250 - parseInt(product.variants.length)} left 
                 </p>
                 <p className="pack-caption">{product.description}</p>
                 <Stack>
@@ -134,7 +133,7 @@ export function PackDetails() {
           </div>
         </Card.Section>
         <Card.Section>
-          {/* {pack ? 'pack is render' : <PackDetailsList />} */}
+          {product ? <PackDetailsList pack={product}/> : 'pack is render' }
         </Card.Section>
       </Card>
     </>

@@ -1,11 +1,13 @@
 import getClient from '../middleware/get-client.js';
 import { uploadFileToS3, deletefiles3 } from './file-up-dos.js';
 import fs from 'fs';
+import { packsModel } from '../model/pack.model.js';
 
 //handle samples creation
 // id: "gid:\/\/shopify\/ProductVariant\/${req.body.variantid}",
 
 export async function createSamples(req, res, app) {
+  console.log('request receve')
   try {
     if (req.file) {
       //upload files to digitalocean space
@@ -15,70 +17,102 @@ export async function createSamples(req, res, app) {
         destination: req.file.path,
       });
       //delete files from the server
-      console.log(stage);
+      // console.log("stage"+stage);
       fs.unlinkSync(req.file.path);
+      const client = await getClient(req, res, app);
+      const data = await client.query({
+        data: {
+          "query": `mutation productVariantCreate($input: ProductVariantInput!) {
+            productVariantCreate(input: $input) {
+              product {
+                id
+                title
+              }
+              productVariant {
+                createdAt
+                displayName
+                id
+                inventoryItem {
+                  unitCost {
+                    amount
+                  }
+                  tracked
+                }
+                inventoryPolicy
+                inventoryQuantity
+                price
+                product {
+                  id
+                }
+                title
+              }
+              userErrors {
+                field
+                message
+              }
+            }
+          }`,
+          "variables": {
+            "input": {
+              "inventoryItem": {
+                "cost": 50,
+                "tracked": false
+              },
+              "inventoryPolicy": "DENY",
+              "inventoryQuantities": {
+                "availableQuantity": 1000,
+                "locationId": "gid://shopify/Location/67371466892"
+              },
+              "price": 0.0,
+              "productId": `gid:\/\/shopify\/Product\/${req.body.id}`,
+              "requiresShipping": false,
+              "options": `${req.file.filename}`
+            }
+          },
+        },
+      });
+      
+      // save the data to mongo db database
+      
+      const pack = await packsModel.findOneAndUpdate(
+        {productId: `gid://shopify/Product/${req.body.id}`},{ $push: { variants: {
+          filesurl:stage.Url,
+          variant_id:data.body.data.productVariantCreate.productVariant.id,
+          title:data.body.data.productVariantCreate.productVariant.displayName.replace(".", " "),
+          price: data.body.data.productVariantCreate.productVariant.price,
+          sales: req.body.sales || 0,
+          downloads:req.body.downloads || 0,
+          status:req.body.status || true
+        }}});
+        
+      console.log(data.body.data.productVariantCreate.productVariant)
+      return res.send(data);
     } else {
       return res.send('File is require');
     }
-    const client = await getClient(req, res, app);
-    const data = await client.query({
-      data: {
-        "query": `mutation productVariantCreate($input: ProductVariantInput!) {
-          productVariantCreate(input: $input) {
-            product {
-              id
-              title
-            }
-            productVariant {
-              createdAt
-              displayName
-              id
-              inventoryItem {
-                unitCost {
-                  amount
-                }
-                tracked
-              }
-              inventoryPolicy
-              inventoryQuantity
-              price
-              product {
-                id
-              }
-              title
-            }
-            userErrors {
-              field
-              message
-            }
-          }
-        }`,
-        "variables": {
-          "input": {
-            "inventoryItem": {
-              "cost": 50,
-              "tracked": false
-            },
-            "inventoryPolicy": "DENY",
-            "inventoryQuantities": {
-              "availableQuantity": 1000,
-              "locationId": "gid://shopify/Location/67371466892"
-            },
-            "price": 0.0,
-            "productId": `gid:\/\/shopify\/Product\/${req.body.id}`,
-            "requiresShipping": false,
-            "options": `${req.file.filename}`
-          }
-        },
-      },
-    });
-    
-    // save the data to mongo db database
-
-    console.log(req.body.id)
-    console.log(data.body.data.productVariantCreate)
-    return res.send(data);
   } catch (err) {
-    console.log(err.response);
+    console.log(err);
+  }
+}
+
+
+//delete samples 
+export async function deleteSample(req, res, app){
+  try{
+    const client = await getClient(req, res, app);
+
+    //delete variant from shopify
+
+    //delete from database
+    await packsModel.findOneAndUpdate(
+      {productId: `gid://shopify/Product/${req.body.id}`},
+      { $pull: { variants: { variant_id: req.body.variantId } } },
+      { safe: true, multi: false }
+    );
+
+    //delete files from digitalocean
+
+  }catch(error){
+    console.log(error)
   }
 }

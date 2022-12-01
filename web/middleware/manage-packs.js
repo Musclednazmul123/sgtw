@@ -5,7 +5,7 @@ import {
   remProduct,
   updateProduct,
 } from '../helpers/packs.js';
-import { createSamples } from '../helpers/samples.js';
+import { createSamples, deleteSample } from '../helpers/samples.js';
 import multer from 'multer';
 
 // const storage = multer.diskStorage({
@@ -52,4 +52,5 @@ export default function managePacks(app) {
   app.post('/api/packs/samples', upload.single('file'), (req, res) =>
     createSamples(req, res, app)
   );
+  app.delete('/api/packs/samples', (req, res)=>deleteSample(req, res, app))
 }

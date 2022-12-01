@@ -23,6 +23,23 @@ const packSchema = new Schema({
   genre: {
     type: String,
   },
+  variants:[
+    {
+      filesurl:{
+        type:String
+      },
+      title: String,
+      price: {
+        type: Number,
+      },
+      variant_id:{
+        type:String,
+      },
+      sales:Number,
+      downloads:Number,
+      status:Boolean,
+    }
+  ],
   price: {
     type: Number,
   },

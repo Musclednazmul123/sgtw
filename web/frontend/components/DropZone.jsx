@@ -3,7 +3,7 @@ import { NoteMinor } from '@shopify/polaris-icons';
 import { useState, useCallback } from 'react';
 import { packStyle } from '../assets';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAuthenticatedFetch, useAppQuery } from '../hooks';
+import { useAuthenticatedFetch} from '../hooks';
 
 export function DropsZone() {
   const [files, setFiles] = useState([]);
@@ -63,11 +63,11 @@ export function DropsZone() {
           method: 'POST',
           body: fd,
         });
-        console.log(response);
+        console.log('response'+response);
         if (response.ok) {
           console.log('samples created success');
 
-          if (index + 1 >= total) {
+          if (index+1 >= total) {
             setLoading(false);
             setFiles(null);
             return navigate(-1);
@@ -75,6 +75,7 @@ export function DropsZone() {
           setCount(index + 1);
         } else {
           console.log('Something went wrong');
+          setLoading(false);
           break;
         }
       }
@@ -97,7 +98,7 @@ export function DropsZone() {
       <div>
         uploading...
         <span id="upload-status-aper-here">
-          {count + 1} / {total}
+          {count} / {total}
         </span>
       </div>
     );
