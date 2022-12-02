@@ -50,6 +50,7 @@ export function DropsZone() {
   const [count, setCount] = useState(0);
   let total = files?.length || 0;
   const handleCreateSamples = async () => {
+    try{
     if (files.length>=1) {
       setLoading(true);
       //for loop for batch upload
@@ -83,6 +84,10 @@ export function DropsZone() {
     } else {
       return;
     }
+
+  } catch (error){
+      console.log(error)
+  }
   };
 
   // useEffect(() => {

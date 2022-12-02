@@ -86,9 +86,9 @@ export async function createSamples(req, res, app) {
         }}});
         
       console.log(data.body.data.productVariantCreate.productVariant)
-      return res.send(data);
+      return res.send({data:data});
     } else {
-      return res.send('File is require');
+      return res.send({status:'File is require'});
     }
   } catch (err) {
     console.log(err);
@@ -102,17 +102,39 @@ export async function deleteSample(req, res, app){
     const client = await getClient(req, res, app);
 
     //delete variant from shopify
+    const data = await client.query({
+      data: {
+        "query": `mutation productVariantDelete($id: ID!) {
+          productVariantDelete(id: $id) {
+            deletedProductVariantId
+            product {
+              id
+              title
+            }
+            userErrors {
+              field
+              message
+            }
+          }
+        }`,
+        "variables": {
+          "id": `${req.body.variantId}`
+        },
+      },
+    });
 
     //delete from database
     await packsModel.findOneAndUpdate(
-      {productId: `gid://shopify/Product/${req.body.id}`},
-      { $pull: { variants: { variant_id: req.body.variantId } } },
+      {productId: req.body.productId},
+      { $pull: { variants: { variant_id: req.body.variantId }}},
       { safe: true, multi: false }
     );
 
     //delete files from digitalocean
+    await deletefiles3(req.body.filesurl)
+    res.send({data:data})
 
   }catch(error){
-    console.log(error)
+    console.log(error.response.errors)
   }
 }

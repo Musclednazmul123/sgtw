@@ -13,7 +13,6 @@ import { useAppQuery, useAuthenticatedFetch } from '../hooks';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 export function PackDetails() {
-  const pack = undefined;
   const fetch = useAuthenticatedFetch();
   const navigate = useNavigate();
 
@@ -35,7 +34,8 @@ export function PackDetails() {
 
   let product = null;
   if (data) {
-    product = data;
+    console.log(data.data)
+    product = data.data;
     // console.log('data is: ' + data._id);
     // return <p>data...</p>;
   } else {
@@ -43,6 +43,7 @@ export function PackDetails() {
   }
 
   const handleDelete = async () => {
+    try{
     const deleted = await fetch(`/api/packs/${id}`, {
       method: 'DELETE',
     });
@@ -50,6 +51,9 @@ export function PackDetails() {
     if (deleted.ok) {
       return navigate('/');
     }
+  }catch(err){
+    console.log(err)
+  }
   };
 
   console.log(product);

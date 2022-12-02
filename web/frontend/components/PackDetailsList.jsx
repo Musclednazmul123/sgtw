@@ -5,14 +5,19 @@ import {
   TextField,
   Button,
 } from "@shopify/polaris";
-
+import { useAppQuery, useAuthenticatedFetch } from '../hooks';
+import { useParams } from 'react-router-dom';
 import { packDetailsListStyle, VideoIcon } from "../assets";
 import { ImportMinor, SortMinor, CircleDownMajor } from "@shopify/polaris-icons";
 
 const PackDetailsList = ({pack}) => {
 
+  const fetch = useAuthenticatedFetch()
+  const { id } = useParams();
+
   console.log("this is pack list page"+pack.variants)
   const [queryValue, setQueryValue] = useState(null);
+  const [selectVariant, setSelectVariant] = useState([])
 
   const [page, setPage] = useState(1)
   const sampleperpage = 10
@@ -101,10 +106,59 @@ const PackDetailsList = ({pack}) => {
     }
   }
   //all the api request send from here
+  const { refetch: refetchProductDetails } = useAppQuery({
+    url: `/api/packs/${id}`,
+  });
+
+  const selectvariant=(e, sample)=>{
+    
+    if(e.target.checked){
+      if (!selectVariant.includes(sample)){
+        setSelectVariant([...selectVariant, sample])
+      }
+    } else {
+      if (selectVariant.includes(sample)){
+        const filteredArray = selectVariant.filter(e => e !== sample)
+
+        console.log(filteredArray)
+        setSelectVariant([...filteredArray])
+      }
+    }
+  }
+
+  const handleDeletesample = async () => {
+    console.log(selectVariant)
+    try{
+      if(selectVariant.length>0){
+        for (let index = 0; index < selectVariant.length; index++) {
+          console.log(selectVariant[index].variant_id)
+          let fd = new FormData();
+          fd.append('filesurl', selectVariant[index].filesurl);
+          fd.append('variantId', selectVariant[index].variant_id);
+          fd.append('productId', pack.productId);
+
+          const deleted = await fetch(`/api/packs/samples/delete`, {
+            method: 'post',
+            body:fd,
+          });
+      
+          if (deleted.ok) {
+            await refetchProductDetails();
+          }
+        }
+      } else{
+        console.log('samples is not selected')
+      }
+
+    } catch (err){
+      console.log(err)
+    }
+  };
 
   const pages = Array.from({length:totalpage}, (v,k)=>k+1)
   return (
     <Stack vertical alignment="fill" spacing="extraLoose" distribution="center">
+      <button onClick={()=>handleDeletesample()}>delete</button>
       <div className="filterWrapper">
         <div className="filter">
         <Filters
@@ -130,7 +184,7 @@ const PackDetailsList = ({pack}) => {
         {/* table for samples */}
         {variants.map((sample)=>(
         <tr key={sample.variant_id}>
-          <td className="th-check"><input type={'checkbox'} id={sample.variant_id} /></td>
+          <td className="th-check"><input onChange={(e)=>selectvariant(e, sample)} type={'checkbox'} id={sample.variant_id} /></td>
           <td className="th-smpl"><img src={pack.thumbnail} width='60px' height='40px' loading="lazy"/>  <p>{sample.title}</p></td>
           <td className="th-price">${sample.price}</td>
           <td className="th-download"><CircleDownMajor width={10} height={10} />{sample.downloads}</td>

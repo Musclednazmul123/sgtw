@@ -66,3 +66,8 @@
   margin: auto;
   justify-content: flex-end;
 }
+
+.viewport-container>div{
+  max-width: 60%;
+  flex-wrap: nowrap;
+}

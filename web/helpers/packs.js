@@ -65,7 +65,7 @@ export async function getProduct(req, res, app) {
       .exec();
 
     console.log(pack);
-    res.send(pack);
+    res.send({data:pack});
   } catch (error) {
     console.log(error);
   }
@@ -106,7 +106,7 @@ export async function remProduct(req, res, app) {
     });
 
     console.log('Delete pack: ' + pack);
-    res.status(200).send('product delete success');
+    res.send({status:'product delete success'});
   } catch (error) {
     console.log(error);
   }
@@ -154,7 +154,7 @@ export async function updateProduct(req, res, app) {
     // update the pack info to our database
 
     // console.log(product);
-    res.send(product);
+    res.send({product:product});
   } catch (error) {
     console.log(error);
   }
@@ -213,7 +213,7 @@ export async function createPack(req, res, app) {
     });
 
     savepack.save();
-    res.send(pack);
+    res.send({pack:pack});
   } catch (error) {
     console.log(error);
   }

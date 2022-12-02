@@ -52,5 +52,5 @@ export default function managePacks(app) {
   app.post('/api/packs/samples', upload.single('file'), (req, res) =>
     createSamples(req, res, app)
   );
-  app.delete('/api/packs/samples', (req, res)=>deleteSample(req, res, app))
+  app.post('/api/packs/samples/delete', upload.none(), (req, res)=>deleteSample(req, res, app))
 }
