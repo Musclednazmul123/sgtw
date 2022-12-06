@@ -1,4 +1,4 @@
-import { DropZone, Stack, Button, Thumbnail, Caption } from '@shopify/polaris';
+import { DropZone, Stack, Button, Thumbnail, Caption, Spinner } from '@shopify/polaris';
 import { NoteMinor } from '@shopify/polaris-icons';
 import { useState, useCallback } from 'react';
 import { packStyle } from '../assets';
@@ -101,10 +101,11 @@ export function DropsZone() {
   if (loading) {
     return (
       <div>
-        uploading...
-        <span id="upload-status-aper-here">
-          {count} / {total}
-        </span>
+        <div className='loading-state dropzone-loading-state'>
+          <Spinner accessibilityLabel="Spinner example" size="large" />
+          <span id="upload-status-aper-here">Uploading...{count} / {total}</span>
+        </div>
+        
       </div>
     );
   }

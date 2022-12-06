@@ -1,4 +1,4 @@
-import { Button, Card, Icon, Stack } from '@shopify/polaris';
+import { Button, Card, Icon, Stack, Spinner } from '@shopify/polaris';
 import {
   packStyle,
   musicIcon,
@@ -11,10 +11,13 @@ import { PickDetailsModal, EmptyState, PackDetailsList } from './';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppQuery, useAuthenticatedFetch } from '../hooks';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { useState } from 'react';
+
 
 export function PackDetails() {
   const fetch = useAuthenticatedFetch();
   const navigate = useNavigate();
+  const [loading, setLoaading]=useState(false)
 
   const { id } = useParams();
 
@@ -39,19 +42,22 @@ export function PackDetails() {
     // console.log('data is: ' + data._id);
     // return <p>data...</p>;
   } else {
-    return <p>Loading...</p>;
+    return <div className='loading-state'><Spinner accessibilityLabel="Spinner example" size="large" /></div>
   }
 
   const handleDelete = async () => {
+    setLoaading(true)
     try{
     const deleted = await fetch(`/api/packs/${id}`, {
       method: 'DELETE',
     });
 
     if (deleted.ok) {
+      setLoaading(false)
       return navigate('/');
     }
   }catch(err){
+    setLoaading(false)
     console.log(err)
   }
   };
@@ -60,7 +66,9 @@ export function PackDetails() {
 
   return (
     <>
+      {loading?<div className='loading-state'><Spinner accessibilityLabel="Spinner example" size="large" /></div>:
       <Card sectioned subdued>
+        {/* loading state here */}
         <Card.Section>
           <div className="viewport-container">
             <Stack>
@@ -140,6 +148,7 @@ export function PackDetails() {
           {product ? <PackDetailsList pack={product}/> : 'pack is render' }
         </Card.Section>
       </Card>
+        }
     </>
   );
 }

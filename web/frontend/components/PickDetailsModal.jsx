@@ -10,6 +10,7 @@ import {
   Checkbox,
   DropZone,
   Image,
+  Spinner,
 } from '@shopify/polaris';
 import { editIcon, closeImage, modalstyle } from '../assets';
 import { MobileCancelMajor } from '@shopify/polaris-icons';
@@ -26,6 +27,7 @@ const PickDetailsModal = ({ buttonText, customContent, oldproduct }) => {
   const fetch = useAuthenticatedFetch();
   const [title, setTitle] = useState(oldproduct ? oldproduct.title : '');
   const [price, setPrice] = useState(oldproduct ? oldproduct.price : '');
+  const [loading, setLoaading]=useState(false)
   const [description, setDescription] = useState(
     oldproduct ? oldproduct.description : ''
   );
@@ -57,6 +59,7 @@ const PickDetailsModal = ({ buttonText, customContent, oldproduct }) => {
 
   // handle update
   const handleUpdate = async () => {
+    setLoaading(true)
     if (!oldproduct) {
       console.log('product is is not define');
       return;
@@ -90,8 +93,10 @@ const PickDetailsModal = ({ buttonText, customContent, oldproduct }) => {
     if (response.ok) {
       setActive(false);
       await refetchProductDetails();
+      setLoaading(false)
       return;
     } else {
+      setLoaading(false)
       console.log('something went wrong');
     }
   };
@@ -99,6 +104,7 @@ const PickDetailsModal = ({ buttonText, customContent, oldproduct }) => {
   // handle create
 
   const handleCreate = async () => {
+    setLoaading(true)
     const fd = new FormData();
     if (file) {
       fd.append('image', file);
@@ -122,9 +128,12 @@ const PickDetailsModal = ({ buttonText, customContent, oldproduct }) => {
       setFile(null);
       setTitle('');
       setPrice('');
+      setDescription('')
       await refetchProducts();
+      setLoaading(false)
       return navigate('/');
     } else {
+      setLoaading(false)
       console.log('Something went wrong');
     }
   };
@@ -137,6 +146,7 @@ const PickDetailsModal = ({ buttonText, customContent, oldproduct }) => {
     setFile(null);
     setTitle('');
     setPrice('');
+    setDescription('')
   };
 
   const preview = file ? true : oldproduct ? true : false;
@@ -163,13 +173,14 @@ const PickDetailsModal = ({ buttonText, customContent, oldproduct }) => {
         ))}
       {active && (
         <div className="modal">
+            {loading?<div className='loading-state'><Spinner accessibilityLabel="Spinner example" size="large" /></div>:
           <div className="modalContent">
             <button
               className="closeIcon"
               onClick={() => {
                 modalClose();
               }}
-            >
+              >
               <Icon source={MobileCancelMajor} color="base" />
             </button>
             <Card sectioned>
@@ -295,7 +306,7 @@ const PickDetailsModal = ({ buttonText, customContent, oldproduct }) => {
                 </Stack>
               </Form>
             </Card>
-          </div>
+          </div>}
         </div>
       )}
     </>

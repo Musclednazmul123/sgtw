@@ -4,6 +4,7 @@ import {
   Stack,
   TextField,
   Button,
+  Spinner,
 } from "@shopify/polaris";
 import { useAppQuery, useAuthenticatedFetch } from '../hooks';
 import { useParams } from 'react-router-dom';
@@ -18,6 +19,7 @@ const PackDetailsList = ({pack}) => {
   console.log("this is pack list page"+pack.variants)
   const [queryValue, setQueryValue] = useState(null);
   const [selectVariant, setSelectVariant] = useState([])
+  const [loading, setLoading] = useState(false);
 
   const [page, setPage] = useState(1)
   const sampleperpage = 10
@@ -128,6 +130,7 @@ const PackDetailsList = ({pack}) => {
 
   const handleDeletesample = async () => {
     console.log(selectVariant)
+    setLoading(true)
     try{
       if(selectVariant.length>0){
         for (let index = 0; index < selectVariant.length; index++) {
@@ -146,16 +149,31 @@ const PackDetailsList = ({pack}) => {
             await refetchProductDetails();
           }
         }
+        setLoading(false)
       } else{
+        setLoading(false)
         console.log('samples is not selected')
       }
 
     } catch (err){
       console.log(err)
+      setLoading(false)
     }
   };
 
   const pages = Array.from({length:totalpage}, (v,k)=>k+1)
+
+  // if (loading) {
+  //   return (
+  //     <div>
+  //       <div className='loading-state dropzone-loading-state'>
+  //         <Spinner accessibilityLabel="Spinner example" size="large" />
+  //       </div>
+        
+  //     </div>
+  //   );
+  // }
+
   return (
     <Stack vertical alignment="fill" spacing="extraLoose" distribution="center">
       <button onClick={()=>handleDeletesample()}>delete</button>
@@ -172,6 +190,8 @@ const PackDetailsList = ({pack}) => {
       </div>
       {/* There should be render the   */}
 
+      {loading ? <div className='loading-state dropzone-loading-state'>
+          <Spinner accessibilityLabel="Spinner example" size="large" /></div>:
       <table className="samples-table">
         <tr className="active-header">
           <th className="th-check"><input type={'checkbox'} id='samples-selected-status' /></th>
@@ -183,7 +203,7 @@ const PackDetailsList = ({pack}) => {
         </tr>
         {/* table for samples */}
         {variants.map((sample)=>(
-        <tr key={sample.variant_id}>
+          <tr key={sample.variant_id}>
           <td className="th-check"><input onChange={(e)=>selectvariant(e, sample)} type={'checkbox'} id={sample.variant_id} /></td>
           <td className="th-smpl"><img src={pack.thumbnail} width='60px' height='40px' loading="lazy"/>  <p>{sample.title}</p></td>
           <td className="th-price">${sample.price}</td>
@@ -192,7 +212,7 @@ const PackDetailsList = ({pack}) => {
           <td className="th-status">{sample.status?<span className="variant-status-active">Active</span>:<span className="variant-status-draft">Draft</span>}</td>
         </tr>
         ))}
-      </table>
+      </table>}
 
       {/* <Stack distribution="center">
         <Pagination
