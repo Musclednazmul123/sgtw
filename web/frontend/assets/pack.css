@@ -66,3 +66,18 @@
   margin: auto;
   justify-content: flex-end;
 }
+
+.viewport-container>div{
+  max-width: 60%;
+  flex-wrap: nowrap;
+}
+.loading-state{
+  display: flex;
+  width: 100%;
+    margin: auto;
+    justify-content: center;
+    padding-top: 100px;
+    padding-bottom: 100px;
+  flex-direction: column;
+  align-items: center;
+}

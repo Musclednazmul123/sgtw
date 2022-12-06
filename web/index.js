@@ -41,6 +41,17 @@ Shopify.Context.initialize({
   }),
 });
 
+// ====================================================================
+
+
+// Shopify.Context.initialize({
+//   SESSION_STORAGE: new Shopify.Auth.Session.MongoDBSessionStorage("mongodb://username:password@host/", "database"),
+//   ...
+// });
+
+
+// =====================================================================
+
 // NOTE: If you choose to implement your own storage strategy using
 // Shopify.Session.CustomSessionStorage, you MUST implement the optional
 // findSessionsByShopCallback and deleteSessionsCallback methods.  These are
@@ -223,6 +234,4 @@ async function server() {
 
 server();
 
-
-//new commit added
 // createServer().then(({ app }) => app.listen(PORT));

@@ -1,9 +1,9 @@
-import { DropZone, Stack, Button, Thumbnail, Caption } from '@shopify/polaris';
+import { DropZone, Stack, Button, Thumbnail, Caption, Spinner } from '@shopify/polaris';
 import { NoteMinor } from '@shopify/polaris-icons';
 import { useState, useCallback } from 'react';
 import { packStyle } from '../assets';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAuthenticatedFetch, useAppQuery } from '../hooks';
+import { useAuthenticatedFetch} from '../hooks';
 
 export function DropsZone() {
   const [files, setFiles] = useState([]);
@@ -50,6 +50,7 @@ export function DropsZone() {
   const [count, setCount] = useState(0);
   let total = files?.length || 0;
   const handleCreateSamples = async () => {
+    try{
     if (files.length>=1) {
       setLoading(true);
       //for loop for batch upload
@@ -63,11 +64,11 @@ export function DropsZone() {
           method: 'POST',
           body: fd,
         });
-        console.log(response);
+        console.log('response'+response);
         if (response.ok) {
           console.log('samples created success');
 
-          if (index + 1 >= total) {
+          if (index+1 >= total) {
             setLoading(false);
             setFiles(null);
             return navigate(-1);
@@ -75,6 +76,7 @@ export function DropsZone() {
           setCount(index + 1);
         } else {
           console.log('Something went wrong');
+          setLoading(false);
           break;
         }
       }
@@ -82,6 +84,10 @@ export function DropsZone() {
     } else {
       return;
     }
+
+  } catch (error){
+      console.log(error)
+  }
   };
 
   // useEffect(() => {
@@ -95,10 +101,11 @@ export function DropsZone() {
   if (loading) {
     return (
       <div>
-        uploading...
-        <span id="upload-status-aper-here">
-          {count + 1} / {total}
-        </span>
+        <div className='loading-state dropzone-loading-state'>
+          <Spinner accessibilityLabel="Spinner example" size="large" />
+          <span id="upload-status-aper-here">Uploading...{count} / {total}</span>
+        </div>
+        
       </div>
     );
   }

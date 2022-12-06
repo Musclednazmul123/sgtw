@@ -107,3 +107,10 @@
 .fileContainter img{
   object-fit: cover;
 }
+
+.loading-state{
+  display: flex;
+    margin: auto;
+    justify-content: center;
+    padding-top: 100px;
+}
