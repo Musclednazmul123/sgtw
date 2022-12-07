@@ -3,10 +3,10 @@ import AWS from 'aws-sdk';
 import fs from 'fs';
 dotenv.config();
 
-const S3_BUCKET_ENDPOINT = 'nyc3.digitaloceanspaces.com';
-const S3_BUCKET_KEY = 'DO00L6VHCM6UJH393BVY';
-const S3_BUCKET_SECRET = 'qUq6x/fg1t75qarPWEUFbtU7pvSlXreeoOEFGjJCtn4';
-const S3_BUCKET_NAME = 'sgtw';
+const S3_BUCKET_ENDPOINT = process.env.S3_BUCKET_ENDPOINT || 'nyc3.digitaloceanspaces.com';
+const S3_BUCKET_KEY = process.env.S3_BUCKET_KEY || 'DO00L6VHCM6UJH393BVY';
+const S3_BUCKET_SECRET = process.env.S3_BUCKET_SECRET || 'qUq6x/fg1t75qarPWEUFbtU7pvSlXreeoOEFGjJCtn4';
+const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME || 'sgtw';
 
 const s3BucketEndpoint = new AWS.Endpoint(S3_BUCKET_ENDPOINT);
 

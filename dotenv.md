@@ -1,0 +1,12 @@
+example of .env file for this project
+
+S3_BUCKET_ENDPOINT=nyc3.digitaloceanspaces.com
+S3_BUCKET_KEY=DO00DB8W7QXK3D477WL4
+S3_BUCKET_SECRET=Kdn5rZsJaZRNCVrxPeChXelEpfVRg4mNW8or2C7CZVg
+S3_BUCKET_NAME=shephbeats
+SHOPIFY_SEPHGOTTHEWAVES_ID=3fa1655d-3105-4b2d-b3dc-9d97c70eaba3
+HOST=https://0026-103-129-208-38.ap.ngrok.io
+SCOPES=write_products, read_inventory
+SHOPIFY_API_KEY=7e59da8e6ae5be9f4f1f815e584c5923
+SHOPIFY_API_SECRET=c0319738e1fb1afcb8b59dbf70cdda77
+NODE_ENV=production

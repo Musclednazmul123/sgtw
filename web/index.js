@@ -4,7 +4,6 @@ import { readFileSync } from 'fs';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import { Shopify, LATEST_API_VERSION } from '@shopify/shopify-api';
-
 import applyAuthMiddleware from './middleware/auth.js';
 import verifyRequest from './middleware/verify-request.js';
 import { setupGDPRWebHooks } from './gdpr.js';
@@ -14,6 +13,9 @@ import { BillingInterval } from './helpers/ensure-billing.js';
 import { AppInstallations } from './app_installations.js';
 import { connectDB } from './db/mongodb.js';
 import managePacks from './middleware/manage-packs.js';
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 const USE_ONLINE_TOKENS = false;
 
